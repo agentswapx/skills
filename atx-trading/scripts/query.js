@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { createClient, parseArgs, fmt } from "./_helpers.js";
-import { parseEther } from "../../../packages/atx-agent-sdk/dist/index.js";
+import { parseEther } from "atx-agent-sdk";
 
-const client = createClient();
+const client = await createClient();
 const args = parseArgs(process.argv.slice(2));
 const command = args._[0];
 

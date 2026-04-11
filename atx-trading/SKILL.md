@@ -14,19 +14,32 @@ metadata:
 # ATX Trading Skill
 
 Interact with ATX token on BSC via `atx-agent-sdk`. All scripts live in
-`skills/atx-trading/scripts/` and use the SDK from `packages/atx-agent-sdk/`.
+`skills/atx-trading/scripts/` and use the installed `atx-agent-sdk` package.
 
 - **SDK GitHub**: https://github.com/agentswapx/atx-agent-sdk
 
 ## Prerequisites
 
-Clone and build the SDK before running scripts:
+Clone both repositories side by side before running scripts:
 
 ```bash
+git clone https://github.com/agentswapx/skills.git
 git clone https://github.com/agentswapx/atx-agent-sdk.git
+```
+
+Build the SDK from source:
+
+```bash
 cd atx-agent-sdk
 npm install
 npm run build
+```
+
+Then install the local SDK into the `skills` repo:
+
+```bash
+cd ../skills
+npm install ../atx-agent-sdk
 ```
 
 ## Environment Variables

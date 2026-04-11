@@ -1,4 +1,4 @@
-import { AtxClient } from "../../../packages/atx-agent-sdk/dist/index.js";
+import { AtxClient } from "atx-agent-sdk";
 
 export async function createClient() {
   const client = new AtxClient({

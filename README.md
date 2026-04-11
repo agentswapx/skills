@@ -6,7 +6,7 @@ This directory contains skills that can be invoked by AI Agents to interact with
 
 - **GitHub**: https://github.com/agentswapx/skills
 - **SDK GitHub**: https://github.com/agentswapx/atx-agent-sdk
-- **SDK Docs**: See [`packages/atx-agent-sdk/README.md`](../packages/atx-agent-sdk/README.md)
+- **SDK Docs**: [agentswapx/atx-agent-sdk](https://github.com/agentswapx/atx-agent-sdk)
 
 ---
 
@@ -30,13 +30,29 @@ skills/
 ## Prerequisites
 
 1. **Node.js 18+**
-2. Build the SDK (all scripts depend on `packages/atx-agent-sdk` build output):
+2. Clone both repositories side by side:
 
 ```bash
-cd packages/atx-agent-sdk && npm install && npm run build
+git clone https://github.com/agentswapx/skills.git
+git clone https://github.com/agentswapx/atx-agent-sdk.git
 ```
 
-3. Set environment variables:
+3. Build the SDK from source:
+
+```bash
+cd atx-agent-sdk
+npm install
+npm run build
+```
+
+4. Install the local SDK into the `skills` repo:
+
+```bash
+cd ../skills
+npm install ../atx-agent-sdk
+```
+
+5. Set environment variables:
 
 ```bash
 export WALLET_PASSWORD="your-password"    # Required for first create/import, auto-saved afterwards

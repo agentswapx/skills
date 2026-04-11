@@ -6,7 +6,7 @@
 
 - **GitHub**: https://github.com/agentswapx/skills
 - **SDK GitHub**: https://github.com/agentswapx/atx-agent-sdk
-- **SDK 文档**: 详见 [`packages/atx-agent-sdk/README.md`](../packages/atx-agent-sdk/README.md)
+- **SDK 文档**: [agentswapx/atx-agent-sdk](https://github.com/agentswapx/atx-agent-sdk)
 
 ---
 
@@ -30,13 +30,29 @@ skills/
 ## 前置条件
 
 1. **Node.js 18+**
-2. 构建 SDK（所有脚本依赖 `packages/atx-agent-sdk` 编译产物）：
+2. 将两个仓库并排克隆到同一级目录：
 
 ```bash
-cd packages/atx-agent-sdk && npm install && npm run build
+git clone https://github.com/agentswapx/skills.git
+git clone https://github.com/agentswapx/atx-agent-sdk.git
 ```
 
-3. 设置环境变量：
+3. 从源码构建 SDK：
+
+```bash
+cd atx-agent-sdk
+npm install
+npm run build
+```
+
+4. 回到 `skills` 仓库并安装本地 SDK：
+
+```bash
+cd ../skills
+npm install ../atx-agent-sdk
+```
+
+5. 设置环境变量：
 
 ```bash
 export WALLET_PASSWORD="your-password"    # 首次创建/导入时必需，之后自动保存
