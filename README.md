@@ -127,7 +127,7 @@ node skills/atx-trading/scripts/swap.js buy <usdtAmount> [--from address] [--sli
 node skills/atx-trading/scripts/swap.js sell <atxAmount> [--from address] [--slippage bps]
 ```
 
-- `--slippage` is in bps (basis points), default 10 (0.1%)
+- `--slippage` is in bps (basis points), default 300 (3%)
 - `--from` specifies the sender wallet address; omit to use the first wallet in keystore
 
 ### V3 Liquidity Management (liquidity.js)

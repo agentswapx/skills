@@ -127,7 +127,7 @@ node skills/atx-trading/scripts/swap.js buy <usdtAmount> [--from address] [--sli
 node skills/atx-trading/scripts/swap.js sell <atxAmount> [--from address] [--slippage bps]
 ```
 
-- `--slippage` 单位为 bps（基点），默认 10（0.1%）
+- `--slippage` 单位为 bps（基点），默认 300（3%）
 - `--from` 指定发送钱包地址，省略则使用 keystore 中的第一个钱包
 
 ### V3 流动性管理 (liquidity.js)

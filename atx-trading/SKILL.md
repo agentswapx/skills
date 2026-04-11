@@ -6,9 +6,12 @@ description: >-
   transfer BNB/ERC20 tokens. Use when the user mentions ATX trading, buying,
   selling, wallet creation, token transfer, liquidity, or price queries.
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
+inject:
+  - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+    as: SKILL_DIR
 metadata:
   author: agentswapx
-  version: "2.0"
+  version: "2.1"
 ---
 
 # ATX Trading Skill
@@ -18,6 +21,20 @@ Trade ATX tokens on BSC. All scripts output JSON for easy parsing.
 - **SDK**: https://github.com/agentswapx/atx-agent-sdk
 - **Keystore dir**: `~/.config/atx-agent/keystore` (fixed, not configurable)
 - **Secrets dir**: `~/.config/atx-agent/` (master.key + secrets.json)
+
+## How to Run Scripts
+
+Use the skill directory path to locate scripts. If `${SKILL_DIR}` is
+available use it; otherwise use the absolute path to this skill's directory
+(e.g. `~/.claude/skills/atx-trading`).
+
+Example:
+
+```bash
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js list
+```
+
+All examples below use `cd ~/.claude/skills/atx-trading &&` prefix for clarity.
 
 ## Important: One Wallet Only
 
@@ -47,75 +64,73 @@ Only if auto-unlock fails, ask the user for their password and pass `--password`
 
 ## Scripts
 
-All commands use `$CLAUDE_SKILL_DIR` to locate scripts:
-
 ### wallet.js
 
 ```bash
 # Create wallet — ask user for password first, then pass via --password
-node "$CLAUDE_SKILL_DIR/scripts/wallet.js" create [name] --password <pwd>
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js create [name] --password <pwd>
 
 # List all wallets (no password needed)
-node "$CLAUDE_SKILL_DIR/scripts/wallet.js" list
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js list
 
 # Import private key — ask user for password first
-node "$CLAUDE_SKILL_DIR/scripts/wallet.js" import <privateKey> [name] --password <pwd>
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js import <privateKey> [name] --password <pwd>
 
 # Export private key (NEVER show output to user)
-node "$CLAUDE_SKILL_DIR/scripts/wallet.js" export <address>
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js export <address>
 
 # Check if password is saved for an address
-node "$CLAUDE_SKILL_DIR/scripts/wallet.js" has-password <address>
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js has-password <address>
 
 # Remove saved password
-node "$CLAUDE_SKILL_DIR/scripts/wallet.js" forget-password <address>
+cd ~/.claude/skills/atx-trading && node scripts/wallet.js forget-password <address>
 ```
 
 ### query.js
 
 ```bash
 # ATX/USDT price
-node "$CLAUDE_SKILL_DIR/scripts/query.js" price
+cd ~/.claude/skills/atx-trading && node scripts/query.js price
 
 # Balance (BNB / ATX / USDT)
-node "$CLAUDE_SKILL_DIR/scripts/query.js" balance <address>
+cd ~/.claude/skills/atx-trading && node scripts/query.js balance <address>
 
 # Swap quote preview
-node "$CLAUDE_SKILL_DIR/scripts/query.js" quote <buy|sell> <amount>
+cd ~/.claude/skills/atx-trading && node scripts/query.js quote <buy|sell> <amount>
 
 # LP positions
-node "$CLAUDE_SKILL_DIR/scripts/query.js" positions <address>
+cd ~/.claude/skills/atx-trading && node scripts/query.js positions <address>
 
 # ERC20 token info
-node "$CLAUDE_SKILL_DIR/scripts/query.js" token-info <tokenAddress>
+cd ~/.claude/skills/atx-trading && node scripts/query.js token-info <tokenAddress>
 ```
 
 ### swap.js
 
 ```bash
 # Buy ATX with USDT
-node "$CLAUDE_SKILL_DIR/scripts/swap.js" buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
 
 # Sell ATX for USDT
-node "$CLAUDE_SKILL_DIR/scripts/swap.js" sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/swap.js sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
 ```
 
 ### liquidity.js
 
 ```bash
-node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
-node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" remove <tokenId> <percent> [--from address] [--password <pwd>]
-node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" collect <tokenId> [--from address] [--password <pwd>]
-node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" burn <tokenId> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
 ```
 
 ### transfer.js
 
 ```bash
-node "$CLAUDE_SKILL_DIR/scripts/transfer.js" bnb <to> <amount> [--from address] [--password <pwd>]
-node "$CLAUDE_SKILL_DIR/scripts/transfer.js" atx <to> <amount> [--from address] [--password <pwd>]
-node "$CLAUDE_SKILL_DIR/scripts/transfer.js" usdt <to> <amount> [--from address] [--password <pwd>]
-node "$CLAUDE_SKILL_DIR/scripts/transfer.js" token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/transfer.js bnb <to> <amount> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/transfer.js usdt <to> <amount> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
 ```
 
 ## Workflow
