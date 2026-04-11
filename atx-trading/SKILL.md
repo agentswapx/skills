@@ -8,149 +8,122 @@ description: >-
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 metadata:
   author: agentswapx
-  version: "1.0"
+  version: "2.0"
 ---
 
 # ATX Trading Skill
 
-Interact with ATX token on BSC via `atx-agent-sdk`. All scripts live in
-`skills/atx-trading/scripts/` and use the installed `atx-agent-sdk` package.
+Trade ATX tokens on BSC. All scripts output JSON for easy parsing.
 
-- **SDK GitHub**: https://github.com/agentswapx/atx-agent-sdk
+- **SDK**: https://github.com/agentswapx/atx-agent-sdk
+- **Keystore dir**: `~/.config/atx-agent/keystore` (fixed, not configurable)
+- **Secrets dir**: `~/.config/atx-agent/` (master.key + secrets.json)
 
-## Prerequisites
+## Important: One Wallet Only
 
-Clone both repositories side by side before running scripts:
+This skill only allows **one wallet** per installation. If a wallet already
+exists, `create` and `import` will fail with an error. Use `wallet list` to
+check if a wallet already exists before attempting to create one.
 
-```bash
-git clone https://github.com/agentswapx/skills.git
-git clone https://github.com/agentswapx/atx-agent-sdk.git
-```
+## Important: Password Handling
 
-Build the SDK from source:
+When the user asks to **create or import a wallet**, you MUST:
 
-```bash
-cd atx-agent-sdk
-npm install
-npm run build
-```
+1. Ask the user for a password first (do NOT generate one)
+2. Pass it via `--password <pwd>` to the script
+3. The password is auto-saved to secure storage after creation
+4. Later operations (swap, transfer, etc.) auto-unlock — no password needed
 
-Then install the local SDK into the `skills` repo:
-
-```bash
-cd ../skills
-npm install ../atx-agent-sdk
-```
-
-## Environment Variables
-
-Scripts read from environment variables:
-
-- `WALLET_PASSWORD` — password for keystore encrypt/decrypt (required only for first create/import; auto-saved afterwards)
-- `KEYSTORE_PATH` — keystore directory (default: `./keystore`)
-- `BSC_RPC_URL` — custom RPC (default: `https://bsc-rpc.publicnode.com`)
-- `ATX_SECRET_STORE` — force secret store backend: `keychain` / `secret-service` / `file` (auto-detected by default)
-- `ATX_MASTER_KEY_PATH` — master key file path (default: `~/.config/atx-agent/master.key`)
-- `ATX_SECRET_STORE_PATH` — encrypted secrets file path (default: `~/.config/atx-agent/secrets.json`)
+When the user asks to **swap, transfer, or manage liquidity** and the wallet
+was already created, the password is auto-loaded from secure storage.
+Only if auto-unlock fails, ask the user for their password and pass `--password`.
 
 ## Security Rules
 
-1. **Never** output private keys or passwords in chat
-2. **Always** show a preview (quote/balance) before executing trades or transfers, and ask the user to confirm
-3. **Never** execute large trades without explicit user confirmation
-4. All private keys are stored encrypted in keystore files — never as plaintext
+1. **NEVER** output private keys or passwords in chat
+2. **ALWAYS** run a preview (query price + balance) before executing trades, show the user, and wait for explicit confirmation
+3. **NEVER** execute large trades without the user saying "yes" or "confirm"
+4. The `export` command output must NEVER be shown to the user
 
-## Available Scripts
+## Scripts
 
-Run all scripts from the project root with: `node skills/atx-trading/scripts/<script>.js <subcommand> [args]`
+All commands use `$CLAUDE_SKILL_DIR` to locate scripts:
 
-### wallet.js — Wallet Management
+### wallet.js
 
 ```bash
-# Create a new wallet (password auto-saved)
-node skills/atx-trading/scripts/wallet.js create [name]
+# Create wallet — ask user for password first, then pass via --password
+node "$CLAUDE_SKILL_DIR/scripts/wallet.js" create [name] --password <pwd>
 
-# List all wallets with balances
-node skills/atx-trading/scripts/wallet.js list
+# List all wallets (no password needed)
+node "$CLAUDE_SKILL_DIR/scripts/wallet.js" list
 
-# Import existing private key (password auto-saved)
-node skills/atx-trading/scripts/wallet.js import <privateKey> [name]
+# Import private key — ask user for password first
+node "$CLAUDE_SKILL_DIR/scripts/wallet.js" import <privateKey> [name] --password <pwd>
 
-# Export private key (NEVER show to user; auto-loads saved password)
-node skills/atx-trading/scripts/wallet.js export <address>
+# Export private key (NEVER show output to user)
+node "$CLAUDE_SKILL_DIR/scripts/wallet.js" export <address>
 
-# Check if password is saved
-node skills/atx-trading/scripts/wallet.js has-password <address>
+# Check if password is saved for an address
+node "$CLAUDE_SKILL_DIR/scripts/wallet.js" has-password <address>
 
 # Remove saved password
-node skills/atx-trading/scripts/wallet.js forget-password <address>
+node "$CLAUDE_SKILL_DIR/scripts/wallet.js" forget-password <address>
 ```
 
-### query.js — Read-Only Queries
+### query.js
 
 ```bash
-# Current ATX/USDT price
-node skills/atx-trading/scripts/query.js price
+# ATX/USDT price
+node "$CLAUDE_SKILL_DIR/scripts/query.js" price
 
-# Balance of an address
-node skills/atx-trading/scripts/query.js balance <address>
+# Balance (BNB / ATX / USDT)
+node "$CLAUDE_SKILL_DIR/scripts/query.js" balance <address>
 
-# Swap quote (preview only)
-node skills/atx-trading/scripts/query.js quote <buy|sell> <amount>
+# Swap quote preview
+node "$CLAUDE_SKILL_DIR/scripts/query.js" quote <buy|sell> <amount>
 
-# List LP positions for an address
-node skills/atx-trading/scripts/query.js positions <address>
+# LP positions
+node "$CLAUDE_SKILL_DIR/scripts/query.js" positions <address>
 
 # ERC20 token info
-node skills/atx-trading/scripts/query.js token-info <tokenAddress>
+node "$CLAUDE_SKILL_DIR/scripts/query.js" token-info <tokenAddress>
 ```
 
-### swap.js — Buy/Sell ATX
+### swap.js
 
 ```bash
 # Buy ATX with USDT
-node skills/atx-trading/scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps]
+node "$CLAUDE_SKILL_DIR/scripts/swap.js" buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
 
 # Sell ATX for USDT
-node skills/atx-trading/scripts/swap.js sell <atxAmount> [--from address] [--slippage bps]
+node "$CLAUDE_SKILL_DIR/scripts/swap.js" sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
 ```
 
-### liquidity.js — V3 Liquidity Management
+### liquidity.js
 
 ```bash
-# Add full-range liquidity
-node skills/atx-trading/scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address]
-
-# Remove liquidity by percentage
-node skills/atx-trading/scripts/liquidity.js remove <tokenId> <percent> [--from address]
-
-# Collect earned fees
-node skills/atx-trading/scripts/liquidity.js collect <tokenId> [--from address]
-
-# Burn an empty position NFT
-node skills/atx-trading/scripts/liquidity.js burn <tokenId> [--from address]
+node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" remove <tokenId> <percent> [--from address] [--password <pwd>]
+node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" collect <tokenId> [--from address] [--password <pwd>]
+node "$CLAUDE_SKILL_DIR/scripts/liquidity.js" burn <tokenId> [--from address] [--password <pwd>]
 ```
 
-### transfer.js — Send Tokens
+### transfer.js
 
 ```bash
-# Send BNB
-node skills/atx-trading/scripts/transfer.js bnb <to> <amount> [--from address]
-
-# Send ATX
-node skills/atx-trading/scripts/transfer.js atx <to> <amount> [--from address]
-
-# Send USDT
-node skills/atx-trading/scripts/transfer.js usdt <to> <amount> [--from address]
-
-# Send any ERC20
-node skills/atx-trading/scripts/transfer.js token <tokenAddress> <to> <amount> [--from address]
+node "$CLAUDE_SKILL_DIR/scripts/transfer.js" bnb <to> <amount> [--from address] [--password <pwd>]
+node "$CLAUDE_SKILL_DIR/scripts/transfer.js" atx <to> <amount> [--from address] [--password <pwd>]
+node "$CLAUDE_SKILL_DIR/scripts/transfer.js" usdt <to> <amount> [--from address] [--password <pwd>]
+node "$CLAUDE_SKILL_DIR/scripts/transfer.js" token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
 ```
 
-## Workflow: Before Any Write Operation
+## Workflow
 
-1. Run `query.js` to check price and balance
-2. Present the information to the user
-3. Wait for explicit confirmation
-4. Execute the operation
+For any write operation (swap, liquidity, transfer):
+
+1. `query.js price` — get current ATX price
+2. `query.js balance <address>` — check user's balance
+3. Show the preview to the user and ask for confirmation
+4. Only after explicit "yes" / "confirm", execute the operation
 5. Report the transaction hash and result

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createClient, getPassword, parseArgs, fmt } from "./_helpers.js";
+import { createClient, loadWallet, parseArgs, fmt, exitError } from "./_helpers.js";
 import { parseEther } from "atx-agent-sdk";
 
 const client = await createClient();
@@ -7,23 +7,20 @@ const args = parseArgs(process.argv.slice(2));
 const command = args._[0];
 
 if (!command) {
-  console.error("Usage: liquidity.js <add|remove|collect|burn> [args] [--from address]");
-  process.exit(1);
+  exitError("Usage: liquidity.js <add|remove|collect|burn> [args] [--from address] [--password <pwd>]");
 }
 
-const password = getPassword();
 const fromAddress = args.from || client.wallet.list()[0]?.address;
-if (!fromAddress) { console.error("No wallet found. Create one first."); process.exit(1); }
+if (!fromAddress) exitError("No wallet found. Create one first.");
 
-const wallet = await client.wallet.load(fromAddress, password);
+const wallet = await loadWallet(client, fromAddress, args);
 
 switch (command) {
   case "add": {
     const atxAmount = args._[1];
     const usdtAmount = args._[2];
     if (!atxAmount || !usdtAmount) {
-      console.error("Usage: liquidity.js add <atxAmount> <usdtAmount> [--from address]");
-      process.exit(1);
+      exitError("Usage: liquidity.js add <atxAmount> <usdtAmount> [--from address]");
     }
     const result = await client.liquidity.addLiquidity(
       wallet,
@@ -39,8 +36,7 @@ switch (command) {
     const tokenId = args._[1];
     const percent = args._[2];
     if (!tokenId || !percent) {
-      console.error("Usage: liquidity.js remove <tokenId> <percent> [--from address]");
-      process.exit(1);
+      exitError("Usage: liquidity.js remove <tokenId> <percent> [--from address]");
     }
     const result = await client.liquidity.removeLiquidity(wallet, BigInt(tokenId), parseInt(percent));
     console.log(JSON.stringify({ action: "remove liquidity", txHash: result.txHash }, null, 2));
@@ -49,7 +45,7 @@ switch (command) {
 
   case "collect": {
     const tokenId = args._[1];
-    if (!tokenId) { console.error("Usage: liquidity.js collect <tokenId> [--from address]"); process.exit(1); }
+    if (!tokenId) exitError("Usage: liquidity.js collect <tokenId> [--from address]");
     const result = await client.liquidity.collectFees(wallet, BigInt(tokenId));
     console.log(JSON.stringify({ action: "collect fees", txHash: result.txHash }, null, 2));
     break;
@@ -57,13 +53,12 @@ switch (command) {
 
   case "burn": {
     const tokenId = args._[1];
-    if (!tokenId) { console.error("Usage: liquidity.js burn <tokenId> [--from address]"); process.exit(1); }
+    if (!tokenId) exitError("Usage: liquidity.js burn <tokenId> [--from address]");
     const result = await client.liquidity.burnPosition(wallet, BigInt(tokenId));
     console.log(JSON.stringify({ action: "burn position", txHash: result.txHash }, null, 2));
     break;
   }
 
   default:
-    console.error("Usage: liquidity.js <add|remove|collect|burn> [args]");
-    process.exit(1);
+    exitError("Usage: liquidity.js <add|remove|collect|burn> [args]");
 }

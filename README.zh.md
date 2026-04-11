@@ -55,12 +55,12 @@ npm install ../atx-agent-sdk
 5. 设置环境变量：
 
 ```bash
-export WALLET_PASSWORD="your-password"    # 首次创建/导入时必需，之后自动保存
-export KEYSTORE_PATH="./keystore"         # 可选，默认 ./keystore
 export BSC_RPC_URL="https://bsc-rpc.publicnode.com"  # 可选，有默认值
 ```
 
-> **密码自动保存**：创建或导入钱包时密码会自动保存到系统安全存储（macOS Keychain / Linux Secret Service / master key file），后续操作无需再设置 `WALLET_PASSWORD`。
+> **密码流程**：执行 `wallet create` 或 `wallet import` 时，会在终端里交互式提示输入密码。密码保存成功后会自动写入安全存储（macOS Keychain / Linux Secret Service / master key file），后续操作通常不需要再次输入。
+>
+> **keystore 目录**：ATX 技能固定使用 `~/.config/atx-agent/keystore`。
 
 ---
 
@@ -77,14 +77,14 @@ node skills/atx-trading/scripts/<script>.js <subcommand> [args]
 ### 钱包管理 (wallet.js)
 
 ```bash
-# 创建新钱包（密码自动保存）
-node skills/atx-trading/scripts/wallet.js create [name]
+# 创建新钱包（通过 --password 传入密码，或在终端交互输入）
+node skills/atx-trading/scripts/wallet.js create [name] --password <pwd>
 
 # 列出所有钱包及余额
 node skills/atx-trading/scripts/wallet.js list
 
-# 导入已有私钥（密码自动保存）
-node skills/atx-trading/scripts/wallet.js import <privateKey> [name]
+# 导入已有私钥
+node skills/atx-trading/scripts/wallet.js import <privateKey> [name] --password <pwd>
 
 # 导出私钥（仅程序内部使用，禁止展示给用户）
 node skills/atx-trading/scripts/wallet.js export <address>
@@ -95,6 +95,8 @@ node skills/atx-trading/scripts/wallet.js has-password <address>
 # 删除已保存的密码
 node skills/atx-trading/scripts/wallet.js forget-password <address>
 ```
+
+所有脚本输出 JSON 格式。创建钱包时密码自动保存，后续操作从安全存储自动解锁。
 
 ### 只读查询 (query.js)
 

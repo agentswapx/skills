@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createClient, getPassword, parseArgs, fmt } from "./_helpers.js";
+import { createClient, loadWallet, parseArgs, fmt, exitError } from "./_helpers.js";
 import { parseEther } from "atx-agent-sdk";
 
 const client = await createClient();
@@ -8,15 +8,13 @@ const command = args._[0];
 const amount = args._[1];
 
 if (!command || !amount || !["buy", "sell"].includes(command)) {
-  console.error("Usage: swap.js <buy|sell> <amount> [--from address] [--slippage bps]");
-  process.exit(1);
+  exitError("Usage: swap.js <buy|sell> <amount> [--from address] [--slippage bps] [--password <pwd>]");
 }
 
-const password = getPassword();
 const fromAddress = args.from || client.wallet.list()[0]?.address;
-if (!fromAddress) { console.error("No wallet found. Create one first."); process.exit(1); }
+if (!fromAddress) exitError("No wallet found. Create one first.");
 
-const wallet = await client.wallet.load(fromAddress, password);
+const wallet = await loadWallet(client, fromAddress, args);
 const amountWei = parseEther(amount);
 const slippage = args.slippage ? parseInt(args.slippage) : undefined;
 

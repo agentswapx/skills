@@ -55,12 +55,12 @@ npm install ../atx-agent-sdk
 5. Set environment variables:
 
 ```bash
-export WALLET_PASSWORD="your-password"    # Required for first create/import, auto-saved afterwards
-export KEYSTORE_PATH="./keystore"         # Optional, default ./keystore
 export BSC_RPC_URL="https://bsc-rpc.publicnode.com"  # Optional, has default
 ```
 
-> **Auto-save password**: When you create or import a wallet, the password is automatically saved to the system's secure storage (macOS Keychain / Linux Secret Service / master key file). You don't need to set `WALLET_PASSWORD` for subsequent operations.
+> **Password flow**: `wallet create` and `wallet import` will prompt you to enter a password interactively. The password is then auto-saved to secure storage (macOS Keychain / Linux Secret Service / master key file), so later operations usually do not need another prompt.
+>
+> **Keystore path**: The ATX skill always uses `~/.config/atx-agent/keystore`.
 
 ---
 
@@ -77,14 +77,14 @@ node skills/atx-trading/scripts/<script>.js <subcommand> [args]
 ### Wallet Management (wallet.js)
 
 ```bash
-# Create a new wallet (password auto-saved)
-node skills/atx-trading/scripts/wallet.js create [name]
+# Create a new wallet (--password required, or interactive prompt in TTY)
+node skills/atx-trading/scripts/wallet.js create [name] --password <pwd>
 
 # List all wallets with balances
 node skills/atx-trading/scripts/wallet.js list
 
-# Import existing private key (password auto-saved)
-node skills/atx-trading/scripts/wallet.js import <privateKey> [name]
+# Import existing private key
+node skills/atx-trading/scripts/wallet.js import <privateKey> [name] --password <pwd>
 
 # Export private key (internal use only, NEVER show to user)
 node skills/atx-trading/scripts/wallet.js export <address>
@@ -95,6 +95,8 @@ node skills/atx-trading/scripts/wallet.js has-password <address>
 # Remove saved password
 node skills/atx-trading/scripts/wallet.js forget-password <address>
 ```
+
+All scripts output JSON. Passwords are auto-saved after wallet creation; later operations auto-unlock from secure storage.
 
 ### Read-Only Queries (query.js)
 
