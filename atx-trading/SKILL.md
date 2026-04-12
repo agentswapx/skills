@@ -1,10 +1,10 @@
 ---
 name: atx-trading
 description: >-
-  Trade ATX tokens on BSC via PancakeSwap V3. Manage wallets (create/import/list),
-  query prices and balances, swap ATX/USDT, manage V3 liquidity positions, and
-  transfer BNB/ERC20 tokens. Use when the user mentions ATX trading, buying,
-  selling, wallet creation, token transfer, liquidity, or price queries.
+  Manage ATX on BSC with wallet creation, price and balance queries, PancakeSwap
+  V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
+  mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
+  selling, liquidity, fees, or token transfers.
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -16,13 +16,23 @@ metadata:
 
 # ATX Trading Skill
 
-Trade ATX tokens on BSC. All scripts output JSON for easy parsing.
+Execute ATX trading and wallet workflows on BSC. This skill is designed for
+agents that need safe, repeatable commands for wallet management, ATX/USDT
+quotes, swaps, V3 liquidity actions, and transfers.
 
 - **SDK**: https://github.com/agentswapx/atx-agent-sdk
 - **Keystore dir**: `~/.config/atx-agent/keystore` (fixed, not configurable)
 - **Secrets dir**: `~/.config/atx-agent/` (master.key + secrets.json)
 
-## How to Run Scripts
+## Use This Skill For
+
+- Create or import the single wallet used by this skill instance
+- Query ATX price, balances, LP positions, and arbitrary ERC20 token info
+- Buy or sell ATX against USDT on PancakeSwap V3
+- Add liquidity, remove liquidity, collect fees, or burn empty LP NFTs
+- Transfer BNB, ATX, USDT, or arbitrary ERC20 tokens
+
+## Script Location
 
 Use the skill directory path to locate scripts. If `${SKILL_DIR}` is
 available use it; otherwise use the absolute path to this skill's directory
@@ -34,88 +44,92 @@ Example:
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js list
 ```
 
-All examples below use `cd ~/.claude/skills/atx-trading &&` prefix for clarity.
+All examples below use `cd ~/.claude/skills/atx-trading &&` for clarity.
 
-## Important: One Wallet Only
+## Operational Constraints
 
-This skill only allows **one wallet** per installation. If a wallet already
-exists, `create` and `import` will fail with an error. Use `wallet list` to
-check if a wallet already exists before attempting to create one.
+- Only **one wallet** is allowed per skill installation. If a wallet already
+  exists, `create` and `import` fail.
+- Use `wallet list` before creating or importing a wallet.
+- Scripts write JSON output unless the underlying command intentionally returns
+  plain text, such as `wallet export`.
 
-## Important: Password Handling
+## Password Rules
 
-When the user asks to **create or import a wallet**, you MUST:
+When the user asks to **create** or **import** a wallet:
 
 1. Ask the user for a password first (do NOT generate one)
 2. Pass it via `--password <pwd>` to the script
 3. The password is auto-saved to secure storage after creation
 4. Later operations (swap, transfer, etc.) auto-unlock — no password needed
 
-When the user asks to **swap, transfer, or manage liquidity** and the wallet
-was already created, the password is auto-loaded from secure storage.
-Only if auto-unlock fails, ask the user for their password and pass `--password`.
+For **swap**, **transfer**, and **liquidity** operations, rely on auto-unlock
+first. Only ask for the password if auto-unlock fails.
 
 ## Security Rules
 
 1. **NEVER** output private keys or passwords in chat
-2. **ALWAYS** run a preview (query price + balance) before executing trades, show the user, and wait for explicit confirmation
-3. **NEVER** execute large trades without the user saying "yes" or "confirm"
-4. The `export` command output must NEVER be shown to the user
+2. **ALWAYS** run a preview before write actions: query price, quote, or balance as appropriate
+3. **ALWAYS** show the preview to the user and wait for explicit confirmation before swap, transfer, or liquidity writes
+4. **NEVER** execute large trades without the user saying "yes" or "confirm"
+5. The `export` command output must NEVER be shown to the user
+6. Treat all BSC writes as real-asset operations
 
-## Scripts
+## High-Value Workflows
 
-### wallet.js
+### Check market state
 
 ```bash
-# Create wallet — ask user for password first, then pass via --password
+cd ~/.claude/skills/atx-trading && node scripts/query.js price
+cd ~/.claude/skills/atx-trading && node scripts/query.js balance <address>
+cd ~/.claude/skills/atx-trading && node scripts/query.js positions <address>
+```
+
+### Preview before swap
+
+```bash
+cd ~/.claude/skills/atx-trading && node scripts/query.js quote <buy|sell> <amount>
+```
+
+### Execute after confirmation
+
+```bash
+cd ~/.claude/skills/atx-trading && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd ~/.claude/skills/atx-trading && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
+```
+
+## Command Reference
+
+### `wallet.js`
+
+```bash
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js create [name] --password <pwd>
-
-# List all wallets (no password needed)
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js list
-
-# Import private key — ask user for password first
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js import <privateKey> [name] --password <pwd>
-
-# Export private key (NEVER show output to user)
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js export <address>
-
-# Check if password is saved for an address
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js has-password <address>
-
-# Remove saved password
 cd ~/.claude/skills/atx-trading && node scripts/wallet.js forget-password <address>
 ```
 
-### query.js
+### `query.js`
 
 ```bash
-# ATX/USDT price
 cd ~/.claude/skills/atx-trading && node scripts/query.js price
-
-# Balance (BNB / ATX / USDT)
 cd ~/.claude/skills/atx-trading && node scripts/query.js balance <address>
-
-# Swap quote preview
 cd ~/.claude/skills/atx-trading && node scripts/query.js quote <buy|sell> <amount>
-
-# LP positions
 cd ~/.claude/skills/atx-trading && node scripts/query.js positions <address>
-
-# ERC20 token info
 cd ~/.claude/skills/atx-trading && node scripts/query.js token-info <tokenAddress>
 ```
 
-### swap.js
+### `swap.js`
 
 ```bash
-# Buy ATX with USDT
 cd ~/.claude/skills/atx-trading && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
-
-# Sell ATX for USDT
 cd ~/.claude/skills/atx-trading && node scripts/swap.js sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
 ```
 
-### liquidity.js
+### `liquidity.js`
 
 ```bash
 cd ~/.claude/skills/atx-trading && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
@@ -124,7 +138,7 @@ cd ~/.claude/skills/atx-trading && node scripts/liquidity.js collect <tokenId> [
 cd ~/.claude/skills/atx-trading && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
 ```
 
-### transfer.js
+### `transfer.js`
 
 ```bash
 cd ~/.claude/skills/atx-trading && node scripts/transfer.js bnb <to> <amount> [--from address] [--password <pwd>]
@@ -133,12 +147,12 @@ cd ~/.claude/skills/atx-trading && node scripts/transfer.js usdt <to> <amount> [
 cd ~/.claude/skills/atx-trading && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
 ```
 
-## Workflow
+## Standard Workflow
 
-For any write operation (swap, liquidity, transfer):
+For any write action:
 
-1. `query.js price` — get current ATX price
-2. `query.js balance <address>` — check user's balance
-3. Show the preview to the user and ask for confirmation
-4. Only after explicit "yes" / "confirm", execute the operation
+1. Query current price, quote, balance, or positions as needed
+2. Summarize the preview for the user
+3. Wait for explicit confirmation
+4. Execute the write command
 5. Report the transaction hash and result
