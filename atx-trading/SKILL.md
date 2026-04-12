@@ -36,15 +36,15 @@ quotes, swaps, V3 liquidity actions, and transfers.
 
 Use the skill directory path to locate scripts. If `${SKILL_DIR}` is
 available use it; otherwise use the absolute path to this skill's directory
-(e.g. `~/.claude/skills/atx-trading`).
+(for example, the directory where this skill was installed for the current agent).
 
 Example:
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js list
+cd "${SKILL_DIR}" && node scripts/wallet.js list
 ```
 
-All examples below use `cd ~/.claude/skills/atx-trading &&` for clarity.
+All examples below use `cd "${SKILL_DIR}" &&` for clarity.
 
 ## Operational Constraints
 
@@ -80,23 +80,23 @@ first. Only ask for the password if auto-unlock fails.
 ### Check market state
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/query.js price
-cd ~/.claude/skills/atx-trading && node scripts/query.js balance <address>
-cd ~/.claude/skills/atx-trading && node scripts/query.js positions <address>
+cd "${SKILL_DIR}" && node scripts/query.js price
+cd "${SKILL_DIR}" && node scripts/query.js balance <address>
+cd "${SKILL_DIR}" && node scripts/query.js positions <address>
 ```
 
 ### Preview before swap
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/query.js quote <buy|sell> <amount>
+cd "${SKILL_DIR}" && node scripts/query.js quote <buy|sell> <amount>
 ```
 
 ### Execute after confirmation
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
 ```
 
 ## Command Reference
@@ -104,47 +104,47 @@ cd ~/.claude/skills/atx-trading && node scripts/transfer.js atx <to> <amount> [-
 ### `wallet.js`
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js create [name] --password <pwd>
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js list
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js import <privateKey> [name] --password <pwd>
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js export <address>
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js has-password <address>
-cd ~/.claude/skills/atx-trading && node scripts/wallet.js forget-password <address>
+cd "${SKILL_DIR}" && node scripts/wallet.js create [name] --password <pwd>
+cd "${SKILL_DIR}" && node scripts/wallet.js list
+cd "${SKILL_DIR}" && node scripts/wallet.js import <privateKey> [name] --password <pwd>
+cd "${SKILL_DIR}" && node scripts/wallet.js export <address>
+cd "${SKILL_DIR}" && node scripts/wallet.js has-password <address>
+cd "${SKILL_DIR}" && node scripts/wallet.js forget-password <address>
 ```
 
 ### `query.js`
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/query.js price
-cd ~/.claude/skills/atx-trading && node scripts/query.js balance <address>
-cd ~/.claude/skills/atx-trading && node scripts/query.js quote <buy|sell> <amount>
-cd ~/.claude/skills/atx-trading && node scripts/query.js positions <address>
-cd ~/.claude/skills/atx-trading && node scripts/query.js token-info <tokenAddress>
+cd "${SKILL_DIR}" && node scripts/query.js price
+cd "${SKILL_DIR}" && node scripts/query.js balance <address>
+cd "${SKILL_DIR}" && node scripts/query.js quote <buy|sell> <amount>
+cd "${SKILL_DIR}" && node scripts/query.js positions <address>
+cd "${SKILL_DIR}" && node scripts/query.js token-info <tokenAddress>
 ```
 
 ### `swap.js`
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/swap.js sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/swap.js sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
 ```
 
 ### `liquidity.js`
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
 ```
 
 ### `transfer.js`
 
 ```bash
-cd ~/.claude/skills/atx-trading && node scripts/transfer.js bnb <to> <amount> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/transfer.js usdt <to> <amount> [--from address] [--password <pwd>]
-cd ~/.claude/skills/atx-trading && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/transfer.js bnb <to> <amount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/transfer.js usdt <to> <amount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
 ```
 
 ## Standard Workflow
