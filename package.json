@@ -1,0 +1,13 @@
+{
+  "name": "atx-skills",
+  "private": true,
+  "type": "module",
+  "description": "ATX agent skills for BSC trading, liquidity, and wallet workflows",
+  "scripts": {
+    "check:price": "node atx-trading/scripts/query.js price",
+    "check:wallets": "node atx-trading/scripts/wallet.js list"
+  },
+  "dependencies": {
+    "atx-agent-sdk": "github:agentswapx/atx-agent-sdk"
+  }
+}

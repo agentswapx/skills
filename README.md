@@ -32,35 +32,29 @@ safety rules, and copy-pasteable commands.
 ## Quick Start
 
 1. **Node.js 18+**
-2. Clone the skill repo and SDK side by side:
+2. Clone the skill repo:
 
 ```bash
 git clone https://github.com/agentswapx/skills.git
-git clone https://github.com/agentswapx/atx-agent-sdk.git
+cd skills
 ```
 
-3. Build the SDK:
+3. Install dependencies:
 
 ```bash
-cd atx-agent-sdk
 npm install
-npm run build
 ```
 
-4. Install the local SDK into this repo:
+This repository installs `atx-agent-sdk` directly from GitHub, so you do not
+need a side-by-side SDK clone for normal usage.
 
-```bash
-cd ../skills
-npm install ../atx-agent-sdk
-```
-
-5. Optionally set a BSC RPC endpoint:
+4. Optionally set a BSC RPC endpoint:
 
 ```bash
 export BSC_RPC_URL="https://bsc-rpc.publicnode.com"  # Optional, has default
 ```
 
-6. Run commands from the repository root:
+5. Run commands from the repository root:
 
 ```bash
 node atx-trading/scripts/query.js price

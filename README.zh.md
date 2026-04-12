@@ -30,35 +30,28 @@
 ## 快速开始
 
 1. **Node.js 18+**
-2. 将 `skills` 和 SDK 并排克隆到同一级目录：
+2. 克隆 `skills` 仓库：
 
 ```bash
 git clone https://github.com/agentswapx/skills.git
-git clone https://github.com/agentswapx/atx-agent-sdk.git
+cd skills
 ```
 
-3. 构建 SDK：
+3. 安装依赖：
 
 ```bash
-cd atx-agent-sdk
 npm install
-npm run build
 ```
 
-4. 回到 `skills` 仓库并安装本地 SDK：
+本仓库会直接从 GitHub 安装 `atx-agent-sdk`，正常使用时不需要再并排克隆 SDK 仓库。
 
-```bash
-cd ../skills
-npm install ../atx-agent-sdk
-```
-
-5. 可选设置 BSC RPC：
+4. 可选设置 BSC RPC：
 
 ```bash
 export BSC_RPC_URL="https://bsc-rpc.publicnode.com"  # 可选，有默认值
 ```
 
-6. 从仓库根目录执行命令：
+5. 从仓库根目录执行命令：
 
 ```bash
 node atx-trading/scripts/query.js price
