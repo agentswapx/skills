@@ -9,7 +9,7 @@ metadata:
       bins:
         - node
         - npm
-    homepage: https://github.com/agentswapx/skills/tree/main/skills/atx-trading-openclaw
+    homepage: https://github.com/agentswapx/skills/tree/main/atx-trading-openclaw
     os:
       - linux
       - macos
