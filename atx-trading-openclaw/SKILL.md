@@ -1,7 +1,7 @@
 ---
 name: atx-trading-openclaw
 description: Manage ATX on BSC with wallet creation, balance and quote queries, PancakeSwap V3 swaps, liquidity actions, and token transfers. Use when the user mentions ATX, BSC, PancakeSwap V3, wallet setup, price checks, buying, selling, liquidity, fees, or token transfers.
-version: 1.0.0
+version: 0.0.1
 metadata:
   author: agentswapx
   openclaw:

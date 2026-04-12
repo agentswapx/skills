@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0
+## 0.0.1
 
 - Initial OpenClaw and ClawHub skill bundle for ATX trading on BSC
 - Added self-contained scripts for wallet, query, swap, liquidity, and transfer flows

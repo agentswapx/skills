@@ -30,7 +30,7 @@ openclaw skills publish ./skills/atx-trading-openclaw
 clawhub publish ./skills/atx-trading-openclaw \
   --slug atx-trading-openclaw \
   --name "ATX Trading for OpenClaw" \
-  --version 1.0.0 \
+  --version 0.0.1 \
   --tags latest,atx,bsc,trading
 ```
 
