@@ -44,6 +44,22 @@ export function exitError(message, code = 1) {
   process.exit(code);
 }
 
+export function getErrorMessage(error) {
+  if (typeof error === "string") return error;
+  if (error?.shortMessage) return error.shortMessage;
+  if (error?.reason) return error.reason;
+  if (error?.message) return error.message.split("\n")[0];
+  return "Unknown error";
+}
+
+export async function runMain(fn) {
+  try {
+    await fn();
+  } catch (error) {
+    exitError(getErrorMessage(error));
+  }
+}
+
 async function promptHidden(promptText) {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
     return null;

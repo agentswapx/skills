@@ -22,6 +22,9 @@ atx-trading-openclaw/
 ├── README.md
 ├── README.zh.md
 ├── PUBLISH.md
+├── CHANGELOG.md
+├── .gitignore
+├── .clawhubignore
 ├── package.json
 └── scripts/
     ├── _helpers.js

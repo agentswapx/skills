@@ -24,6 +24,7 @@ atx-trading/
 ├── SKILL.md
 ├── README.md
 ├── README.zh.md
+├── .gitignore
 ├── package.json
 └── scripts/
     ├── _helpers.js

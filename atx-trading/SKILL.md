@@ -11,7 +11,7 @@ inject:
     as: SKILL_DIR
 metadata:
   author: agentswapx
-  version: "2.1"
+  version: "2.1.0"
 ---
 
 # ATX Trading Skill
