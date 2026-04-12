@@ -1,0 +1,15 @@
+{
+  "name": "atx-trading-openclaw",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "OpenClaw and ClawHub skill bundle for ATX wallet, query, swap, liquidity, and transfer workflows on BSC",
+  "scripts": {
+    "bootstrap": "npm install",
+    "check:price": "node scripts/query.js price",
+    "check:wallets": "node scripts/wallet.js list"
+  },
+  "dependencies": {
+    "atx-agent-sdk": "github:agentswapx/atx-agent-sdk"
+  }
+}
