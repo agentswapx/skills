@@ -1,33 +1,49 @@
 # Publish Notes
 
-This directory is published to ClawHub and OpenClaw as a single skill bundle
-that also works as a standalone `skills.sh`-compatible package (Claude /
-Cursor / Codex CLI). The same SKILL.md frontmatter declares both conventions
-so a single source of truth covers all clients.
+This directory is published to **ClawHub** as a single skill bundle that also
+works as a standalone `skills.sh`-compatible package (Claude / Cursor / Codex
+CLI). The same `SKILL.md` frontmatter declares both conventions, so a single
+source of truth covers all clients. After publish, the skill is installable via
+both `clawhub install atxswap` and `openclaw skills install atxswap` (OpenClaw
+pulls from the same ClawHub registry).
+
+> Heads up: the OpenClaw CLI itself does **not** have `skills publish` or
+> `skills validate` subcommands. All publishing flows through the dedicated
+> `clawhub` CLI (`npm install -g clawhub`).
 
 ## Pre-publish checklist
 
-1. Install dependencies inside this directory (`npm install`).
-2. Run the local read-only checks:
+1. Bump versions consistently:
+   - `SKILL.md` frontmatter `version`
+   - `package.json` `version`
+   - These two MUST match — `clawhub publish --version` overrides them at
+     upload time but mismatched local values confuse `skills.sh` consumers.
+2. Install dependencies inside this directory (`npm install`) so the SDK
+   builds cleanly.
+3. Run the local read-only checks:
    - `node scripts/wallet.js list`
    - `node scripts/query.js price`
    - `node scripts/query.js quote buy 1`
-3. Confirm the version in `SKILL.md` and `package.json` matches.
-4. Confirm the folder does not include secrets, keystore files, or `node_modules/`.
+4. Confirm the folder does not include secrets, keystore files, or
+   `node_modules/`. (`.clawhubignore` already excludes `node_modules/`,
+   `.clawhub/`, `.clawdhub/`, `.DS_Store`, `*.log`.)
+5. Make sure the parent submodule (`agentswapx/skills`) is committed and
+   pushed — the published `homepage` URL points at GitHub.
 
-## Validate
-
-```bash
-openclaw skills validate ./skills/atxswap/SKILL.md
-```
-
-## Publish with OpenClaw CLI
+## Authenticate with ClawHub
 
 ```bash
-openclaw skills publish ./skills/atxswap
+# Browser flow (opens a token-grant page)
+clawhub login
+
+# Or token flow (no browser)
+clawhub login --token <YOUR_TOKEN> --no-browser
+
+# Verify
+clawhub whoami
 ```
 
-## Publish with ClawHub CLI
+## Publish
 
 ```bash
 clawhub publish ./skills/atxswap \
@@ -37,9 +53,28 @@ clawhub publish ./skills/atxswap \
   --tags latest,atxswap,atx,bsc,trading
 ```
 
+After upload there is a brief security-scan window during which `clawhub
+inspect atxswap` returns "Skill is hidden while security scan is pending".
+Installs from `clawhub install` / `openclaw skills install` keep working
+during that window.
+
+## Verify the published skill
+
+```bash
+# Registry round-trip
+clawhub inspect atxswap
+
+# End-user simulation in a clean directory
+TEST=$(mktemp -d)
+cd "$TEST" && clawhub install atxswap
+cd skills/atxswap && npm install   # pulls + builds atxswap-sdk (~1 min first time)
+node scripts/query.js              # should print usage
+```
+
 ## Suggested changelog
 
 ```text
-Initial OpenClaw and ClawHub release for ATX wallet, query, swap, liquidity,
-and transfer workflows on BSC.
+Initial ClawHub release for ATX wallet, query, swap, liquidity, and transfer
+workflows on BSC. Compatible with both ClawHub/OpenClaw clients and the
+standalone skills.sh runtime.
 ```
