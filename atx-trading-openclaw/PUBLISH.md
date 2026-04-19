@@ -28,8 +28,8 @@ openclaw skills publish ./skills/atx-trading-openclaw
 
 ```bash
 clawhub publish ./skills/atx-trading-openclaw \
-  --slug atx-trading-openclaw \
-  --name "ATX Trading for OpenClaw" \
+  --slug atx \
+  --name "ATX" \
   --version 0.0.1 \
   --tags latest,atx,bsc,trading
 ```
