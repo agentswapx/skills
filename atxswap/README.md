@@ -1,8 +1,8 @@
 # ATXSwap Skill
 
-This directory contains the standalone `skills.sh` variant of the ATXSwap
-skill. It is separate from `skills/atxswap-openclaw`, which is maintained
-for OpenClaw and ClawHub publishing.
+A single skill bundle for ATX trading on BSC. Works with **Claude / Cursor /
+Codex CLI** (skills.sh runtime) and **OpenClaw / ClawHub** out of the same
+directory, using a unified `SKILL.md` that declares both conventions.
 
 [**中文文档**](./README.zh.md)
 
@@ -25,6 +25,9 @@ atxswap/
 ├── SKILL.md
 ├── README.md
 ├── README.zh.md
+├── PUBLISH.md
+├── CHANGELOG.md
+├── .clawhubignore
 ├── .gitignore
 ├── package.json
 └── scripts/
@@ -36,11 +39,21 @@ atxswap/
     └── transfer.js
 ```
 
-## Quick Start
+## Install
+
+### OpenClaw / ClawHub (one-click)
 
 ```bash
-cd skills/atxswap
-npm install
+openclaw skills install atxswap
+# or
+clawhub install atxswap
+```
+
+### Manual / skills.sh runtime
+
+```bash
+git clone https://github.com/agentswapx/skills.git
+cd skills/atxswap && npm install
 ```
 
 Optional RPC override:
@@ -49,7 +62,7 @@ Optional RPC override:
 export BSC_RPC_URL="https://bsc-rpc.publicnode.com"
 ```
 
-Common commands:
+## Common Commands
 
 ```bash
 cd skills/atxswap && node scripts/wallet.js list
@@ -57,15 +70,12 @@ cd skills/atxswap && node scripts/query.js price
 cd skills/atxswap && node scripts/query.js quote buy 1
 ```
 
+When invoked through a `${SKILL_DIR}`-aware runtime, `cd "${SKILL_DIR}"` is
+preferred so the skill works regardless of where the client installed it.
+
 ## Security Rules
 
 1. Never expose private keys or passwords in chat output.
 2. Always preview price, quote, balance, or positions before write actions.
 3. Always wait for explicit user confirmation before swap, transfer, or liquidity writes.
 4. Treat all write actions as mainnet asset operations.
-
-## Skills.sh Positioning
-
-This directory is the packaged `skills.sh` version. Keep operational docs and
-package metadata here instead of under `skills/` root so it remains installable
-and understandable on its own.

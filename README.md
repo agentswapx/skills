@@ -1,10 +1,11 @@
 # Skills Directory
 
-This directory is only an index for the standalone skill packages in this
+This directory is the index for the standalone skill packages in this
 repository.
 
-- `atxswap/`: the standalone `skills.sh` variant
-- `atxswap-openclaw/`: the standalone OpenClaw and ClawHub variant
+- [`atxswap/`](./atxswap/) — unified ATX trading skill for **Claude / Cursor /
+  Codex CLI** (skills.sh runtime) and **OpenClaw / ClawHub**, sharing one
+  `SKILL.md` that declares both conventions.
 
 Each skill keeps its own `SKILL.md`, package metadata, scripts, and README
 files inside its own directory.
