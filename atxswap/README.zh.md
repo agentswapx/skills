@@ -7,8 +7,8 @@ Codex CLI**（skills.sh 运行时）和 **OpenClaw / ClawHub**，无需为不同
 [**English**](./README.md)
 
 - **GitHub**: https://github.com/agentswapx/skills
-- **SDK GitHub**: https://github.com/agentswapx/atx-agent-sdk
-- **SDK 文档**: [agentswapx/atx-agent-sdk](https://github.com/agentswapx/atx-agent-sdk)
+- **SDK GitHub**: https://github.com/agentswapx/atxswap-sdk
+- **SDK 文档**: [agentswapx/atxswap-sdk](https://github.com/agentswapx/atxswap-sdk)
 
 ## 能力范围
 

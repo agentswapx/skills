@@ -10,6 +10,6 @@
     "check:wallets": "node scripts/wallet.js list"
   },
   "dependencies": {
-    "atx-agent-sdk": "github:agentswapx/atx-agent-sdk"
+    "atxswap-sdk": "github:agentswapx/atxswap-sdk"
   }
 }

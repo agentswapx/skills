@@ -31,9 +31,9 @@ Execute ATX trading and wallet workflows on BSC. This skill is designed for
 agents that need safe, repeatable commands for wallet management, ATX/USDT
 quotes, swaps, V3 liquidity actions, and transfers.
 
-- **SDK**: https://github.com/agentswapx/atx-agent-sdk
-- **Keystore dir**: `~/.config/atx-agent/keystore` (fixed, not configurable)
-- **Secrets dir**: `~/.config/atx-agent/` (master.key + secrets.json)
+- **SDK**: https://github.com/agentswapx/atxswap-sdk
+- **Keystore dir**: `~/.config/atxswap/keystore` (fixed, not configurable)
+- **Secrets dir**: `~/.config/atxswap/` (master.key + secrets.json)
 
 ## Use This Skill For
 
@@ -45,7 +45,7 @@ quotes, swaps, V3 liquidity actions, and transfers.
 
 ## Before First Use
 
-This skill ships its own Node scripts and depends on `atx-agent-sdk`.
+This skill ships its own Node scripts and depends on `atxswap-sdk`.
 
 1. Open the skill directory where this `SKILL.md` is installed.
 2. Run `npm install` there before using any script.
@@ -76,8 +76,8 @@ skill directory.
 
 - `BSC_RPC_URL` is optional. If set, scripts use it for all BSC reads and writes.
   When unset, scripts fall back to a built-in public RPC.
-- Wallet files live under `~/.config/atx-agent/keystore`.
-- Secure secrets live under `~/.config/atx-agent/` (master.key + secrets.json).
+- Wallet files live under `~/.config/atxswap/keystore`.
+- Secure secrets live under `~/.config/atxswap/` (master.key + secrets.json).
 - Only **one wallet** is allowed per skill installation. If a wallet already
   exists, `wallet.js create` and `wallet.js import` fail.
 - Use `wallet.js list` before creating or importing a wallet.

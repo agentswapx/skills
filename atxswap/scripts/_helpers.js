@@ -1,9 +1,9 @@
-import { AtxClient } from "atx-agent-sdk";
+import { AtxClient } from "atxswap-sdk";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import readline from "node:readline";
 
-const DEFAULT_KEYSTORE_PATH = join(homedir(), ".config", "atx-agent", "keystore");
+const DEFAULT_KEYSTORE_PATH = join(homedir(), ".config", "atxswap", "keystore");
 
 export async function createClient() {
   const client = new AtxClient({

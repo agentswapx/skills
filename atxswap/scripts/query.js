@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createClient, parseArgs, fmt, runMain } from "./_helpers.js";
-import { parseEther } from "atx-agent-sdk";
+import { parseEther } from "atxswap-sdk";
 
 await runMain(async () => {
   const client = await createClient();
