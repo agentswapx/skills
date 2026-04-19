@@ -1,7 +1,7 @@
 # ATX Trading OpenClaw Skill
 
 This directory contains the OpenClaw and ClawHub variant of the ATX trading
-skill. It is separate from `skills/atx-trading`, which remains the
+skill. It is separate from `skills/atxswap`, which remains the
 `skills.sh`-oriented version.
 
 [**中文文档**](./README.zh.md)
@@ -17,7 +17,7 @@ skill. It is separate from `skills/atx-trading`, which remains the
 ## Directory Layout
 
 ```text
-atx-trading-openclaw/
+atxswap-openclaw/
 ├── SKILL.md
 ├── README.md
 ├── README.zh.md
@@ -40,7 +40,7 @@ atx-trading-openclaw/
 Install dependencies inside this directory before first use:
 
 ```bash
-cd skills/atx-trading-openclaw
+cd skills/atxswap-openclaw
 npm install
 ```
 
@@ -53,9 +53,9 @@ export BSC_RPC_URL="https://bsc-rpc.publicnode.com"
 ## Common Commands
 
 ```bash
-cd skills/atx-trading-openclaw && node scripts/wallet.js list
-cd skills/atx-trading-openclaw && node scripts/query.js price
-cd skills/atx-trading-openclaw && node scripts/query.js quote buy 1
+cd skills/atxswap-openclaw && node scripts/wallet.js list
+cd skills/atxswap-openclaw && node scripts/query.js price
+cd skills/atxswap-openclaw && node scripts/query.js quote buy 1
 ```
 
 ## Security Model

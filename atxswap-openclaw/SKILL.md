@@ -9,7 +9,7 @@ metadata:
       bins:
         - node
         - npm
-    homepage: https://github.com/agentswapx/skills/tree/main/atx-trading-openclaw
+    homepage: https://github.com/agentswapx/skills/tree/main/atxswap-openclaw
     os:
       - linux
       - macos
@@ -37,7 +37,7 @@ This skill ships its own Node scripts and depends on `atx-agent-sdk`.
 3. If `npm install` fails, stop and report the dependency error instead of guessing.
 
 If the skill is installed into an OpenClaw workspace, the common location is
-`skills/atx-trading-openclaw/`.
+`skills/atxswap-openclaw/`.
 
 ## Script Location
 
@@ -46,8 +46,8 @@ Run commands from the skill directory so relative imports resolve correctly.
 Example:
 
 ```bash
-cd skills/atx-trading-openclaw && npm install
-cd skills/atx-trading-openclaw && node scripts/wallet.js list
+cd skills/atxswap-openclaw && npm install
+cd skills/atxswap-openclaw && node scripts/wallet.js list
 ```
 
 If the skill was installed into a shared OpenClaw directory instead of the
@@ -98,36 +98,36 @@ Before every write action:
 ### Wallet
 
 ```bash
-cd skills/atx-trading-openclaw && node scripts/wallet.js create [name] --password <pwd>
-cd skills/atx-trading-openclaw && node scripts/wallet.js list
-cd skills/atx-trading-openclaw && node scripts/wallet.js import <privateKey> [name] --password <pwd>
-cd skills/atx-trading-openclaw && node scripts/wallet.js has-password <address>
-cd skills/atx-trading-openclaw && node scripts/wallet.js forget-password <address>
+cd skills/atxswap-openclaw && node scripts/wallet.js create [name] --password <pwd>
+cd skills/atxswap-openclaw && node scripts/wallet.js list
+cd skills/atxswap-openclaw && node scripts/wallet.js import <privateKey> [name] --password <pwd>
+cd skills/atxswap-openclaw && node scripts/wallet.js has-password <address>
+cd skills/atxswap-openclaw && node scripts/wallet.js forget-password <address>
 ```
 
 ### Read-only queries
 
 ```bash
-cd skills/atx-trading-openclaw && node scripts/query.js price
-cd skills/atx-trading-openclaw && node scripts/query.js balance <address>
-cd skills/atx-trading-openclaw && node scripts/query.js quote <buy|sell> <amount>
-cd skills/atx-trading-openclaw && node scripts/query.js positions <address>
-cd skills/atx-trading-openclaw && node scripts/query.js token-info <tokenAddress>
+cd skills/atxswap-openclaw && node scripts/query.js price
+cd skills/atxswap-openclaw && node scripts/query.js balance <address>
+cd skills/atxswap-openclaw && node scripts/query.js quote <buy|sell> <amount>
+cd skills/atxswap-openclaw && node scripts/query.js positions <address>
+cd skills/atxswap-openclaw && node scripts/query.js token-info <tokenAddress>
 ```
 
 ### Write commands
 
 ```bash
-cd skills/atx-trading-openclaw && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/swap.js sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/transfer.js bnb <to> <amount> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/transfer.js usdt <to> <amount> [--from address] [--password <pwd>]
-cd skills/atx-trading-openclaw && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/swap.js sell <atxAmount> [--from address] [--slippage bps] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/transfer.js bnb <to> <amount> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/transfer.js usdt <to> <amount> [--from address] [--password <pwd>]
+cd skills/atxswap-openclaw && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
 ```
 
 ## When To Refuse Or Pause
@@ -139,6 +139,6 @@ cd skills/atx-trading-openclaw && node scripts/transfer.js token <tokenAddress> 
 
 ## Publish Notes
 
-This folder is the OpenClaw and ClawHub version of the ATX trading skill.
-Keep it separate from `skills/atx-trading`, which is reserved for the
+This folder is the OpenClaw and ClawHub version of the ATXSwap skill.
+Keep it separate from `skills/atxswap`, which is reserved for the
 `skills.sh` variant.

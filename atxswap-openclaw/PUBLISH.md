@@ -15,19 +15,19 @@ This directory is intended to be published to ClawHub as its own skill bundle.
 ## Validate
 
 ```bash
-openclaw skills validate ./skills/atx-trading-openclaw/SKILL.md
+openclaw skills validate ./skills/atxswap-openclaw/SKILL.md
 ```
 
 ## Publish with OpenClaw CLI
 
 ```bash
-openclaw skills publish ./skills/atx-trading-openclaw
+openclaw skills publish ./skills/atxswap-openclaw
 ```
 
 ## Publish with ClawHub CLI
 
 ```bash
-clawhub publish ./skills/atx-trading-openclaw \
+clawhub publish ./skills/atxswap-openclaw \
   --slug atxswap \
   --name "ATXSwap" \
   --version 0.0.1 \

@@ -1,7 +1,7 @@
-# ATX Trading 技能
+# ATXSwap 技能
 
-这个目录是面向 `skills.sh` 的独立 ATX 交易技能版本。它和
-`skills/atx-trading-openclaw` 分开维护，后者用于 OpenClaw 与 ClawHub。
+这个目录是面向 `skills.sh` 的独立 ATXSwap 技能版本。它和
+`skills/atxswap-openclaw` 分开维护，后者用于 OpenClaw 与 ClawHub。
 
 [**English**](./README.md)
 
@@ -20,7 +20,7 @@
 ## 目录结构
 
 ```text
-atx-trading/
+atxswap/
 ├── SKILL.md
 ├── README.md
 ├── README.zh.md
@@ -38,7 +38,7 @@ atx-trading/
 ## 快速开始
 
 ```bash
-cd skills/atx-trading
+cd skills/atxswap
 npm install
 ```
 
@@ -51,9 +51,9 @@ export BSC_RPC_URL="https://bsc-rpc.publicnode.com"
 常用命令：
 
 ```bash
-cd skills/atx-trading && node scripts/wallet.js list
-cd skills/atx-trading && node scripts/query.js price
-cd skills/atx-trading && node scripts/query.js quote buy 1
+cd skills/atxswap && node scripts/wallet.js list
+cd skills/atxswap && node scripts/query.js price
+cd skills/atxswap && node scripts/query.js quote buy 1
 ```
 
 ## 安全规则

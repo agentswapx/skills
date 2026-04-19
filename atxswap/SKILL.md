@@ -38,13 +38,13 @@ Use the skill directory path to locate scripts. If `${SKILL_DIR}` is
 available use it; otherwise use the absolute path to this skill's directory
 (for example, the directory where this skill was installed for the current agent).
 
-If you are using this repository directly, treat `skills/atx-trading/` as the
+If you are using this repository directly, treat `skills/atxswap/` as the
 standalone package root and run `npm install` there before using any script.
 
 Example:
 
 ```bash
-cd skills/atx-trading && npm install
+cd skills/atxswap && npm install
 cd "${SKILL_DIR}" && node scripts/wallet.js list
 ```
 
@@ -163,6 +163,6 @@ For any write action:
 
 ## Variant Boundary
 
-This directory is the `skills.sh` variant of the ATX trading skill. Keep it
-separate from `skills/atx-trading-openclaw`, which is the OpenClaw and
+This directory is the `skills.sh` variant of the ATXSwap skill. Keep it
+separate from `skills/atxswap-openclaw`, which is the OpenClaw and
 ClawHub-oriented package.
