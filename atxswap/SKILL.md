@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
   mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
   selling, liquidity, fees, or token transfers.
-version: "0.0.1"
+version: "0.0.2"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -31,7 +31,7 @@ Execute ATX trading and wallet workflows on BSC. This skill is designed for
 agents that need safe, repeatable commands for wallet management, ATX/USDT
 quotes, swaps, V3 liquidity actions, and transfers.
 
-- **SDK**: https://github.com/agentswapx/atxswap-sdk
+- **SDK**: [`atxswap-sdk`](https://www.npmjs.com/package/atxswap-sdk) on npm ([source](https://github.com/agentswapx/atxswap-sdk))
 - **Keystore dir**: `~/.config/atxswap/keystore` (fixed, not configurable)
 - **Secrets dir**: `~/.config/atxswap/` (master.key + secrets.json)
 

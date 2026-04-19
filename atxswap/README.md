@@ -7,8 +7,8 @@ directory, using a unified `SKILL.md` that declares both conventions.
 [**中文文档**](./README.zh.md)
 
 - **GitHub**: https://github.com/agentswapx/skills
-- **SDK GitHub**: https://github.com/agentswapx/atxswap-sdk
-- **SDK Docs**: [agentswapx/atxswap-sdk](https://github.com/agentswapx/atxswap-sdk)
+- **SDK on npm**: [`atxswap-sdk`](https://www.npmjs.com/package/atxswap-sdk)
+- **SDK source / docs**: [agentswapx/atxswap-sdk](https://github.com/agentswapx/atxswap-sdk)
 
 ## What This Skill Covers
 
