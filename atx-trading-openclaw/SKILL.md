@@ -1,5 +1,5 @@
 ---
-name: atx
+name: atxswap
 description: Manage ATX on BSC with wallet creation, balance and quote queries, PancakeSwap V3 swaps, liquidity actions, and token transfers. Use when the user mentions ATX, BSC, PancakeSwap V3, wallet setup, price checks, buying, selling, liquidity, fees, or token transfers.
 version: 0.0.1
 metadata:
@@ -15,7 +15,7 @@ metadata:
       - macos
 ---
 
-# ATX
+# ATXSwap
 
 Use this skill for real ATX operations on BSC: wallet setup, price and balance
 queries, PancakeSwap V3 swaps, liquidity actions, and BNB or ERC20 transfers.

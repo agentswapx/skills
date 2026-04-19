@@ -1,5 +1,5 @@
 ---
-name: atx
+name: atxswap
 description: >-
   Manage ATX on BSC with wallet creation, price and balance queries, PancakeSwap
   V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
