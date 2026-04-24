@@ -17,8 +17,6 @@ metadata:
       bins:
         - node
         - npm
-      env:
-        - BSC_RPC_URL
     homepage: https://github.com/agentswapx/skills/tree/main/atxswap
     os:
       - linux
@@ -75,7 +73,7 @@ skill directory.
 ## Runtime Notes
 
 - `BSC_RPC_URL` is optional. If set, scripts use it for all BSC reads and writes.
-  When unset, scripts fall back to a built-in public RPC.
+  When unset, scripts default to `https://bsc-mainnet.infura.io`.
 - Wallet files live under `~/.config/atxswap/keystore`.
 - Secure secrets live under `~/.config/atxswap/` (master.key + secrets.json).
 - Only **one wallet** is allowed per skill installation. If a wallet already

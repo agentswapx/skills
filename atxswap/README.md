@@ -1,8 +1,8 @@
 # ATXSwap Skill
 
-A single skill bundle for ATX trading on BSC. Works with **Claude / Cursor /
-Codex CLI** (skills.sh runtime) and **OpenClaw / ClawHub** out of the same
-directory, using a unified `SKILL.md` that declares both conventions.
+An ATXSwap agent exchange skill bundle for ATX on BSC. A single `SKILL.md`
+works across clients represented by **Claude Code** and **OpenClaw**, so you do
+not need separate directories for different clients.
 
 [**中文文档**](./README.zh.md)
 
@@ -41,25 +41,23 @@ atxswap/
 
 ## Install
 
-### OpenClaw / ClawHub (one-click)
+### OpenClaw Install
 
 ```bash
 openclaw skills install atxswap
-# or
-clawhub install atxswap
 ```
 
-### Manual / skills.sh runtime
+### Claude Code Install
 
 ```bash
 git clone https://github.com/agentswapx/skills.git
 cd skills/atxswap && npm install
 ```
 
-Optional RPC override:
+By default, the skill uses `https://bsc-mainnet.infura.io`. To override it:
 
 ```bash
-export BSC_RPC_URL="https://bsc-rpc.publicnode.com"
+export BSC_RPC_URL="https://bsc-mainnet.infura.io"
 ```
 
 ## Common Commands

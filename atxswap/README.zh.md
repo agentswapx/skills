@@ -1,8 +1,7 @@
 # ATXSwap 技能
 
-ATX 在 BSC 链上的统一技能包。同一份 `SKILL.md` 同时兼容 **Claude / Cursor /
-Codex CLI**（skills.sh 运行时）和 **OpenClaw / ClawHub**，无需为不同客户端维护
-多份目录。
+ATX 在 BSC 链上 ATXSwap 智能体交易所的技能包。同一份 `SKILL.md` 同时兼容以
+**Claude Code** 和 **OpenClaw** 为代表的客户端，无需为不同客户端维护多份目录。
 
 [**English**](./README.md)
 
@@ -41,25 +40,23 @@ atxswap/
 
 ## 安装
 
-### OpenClaw / ClawHub 一键安装
+### OpenClaw 安装
 
 ```bash
 openclaw skills install atxswap
-# 或
-clawhub install atxswap
 ```
 
-### 手动 / skills.sh 运行时
+### Claude Code 安装
 
 ```bash
 git clone https://github.com/agentswapx/skills.git
 cd skills/atxswap && npm install
 ```
 
-可选设置 BSC RPC：
+默认使用 `https://bsc-mainnet.infura.io`，如需覆盖可设置：
 
 ```bash
-export BSC_RPC_URL="https://bsc-rpc.publicnode.com"
+export BSC_RPC_URL="https://bsc-mainnet.infura.io"
 ```
 
 ## 常用命令
