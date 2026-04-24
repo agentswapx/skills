@@ -12,7 +12,7 @@ not need separate directories for different clients.
 
 ## What This Skill Covers
 
-- Create or import the single wallet used by the skill
+- Create the single wallet used by the skill (importing an existing private key is not supported)
 - Query ATX price, balances, LP positions, and ERC20 token info
 - Buy or sell ATX against USDT on PancakeSwap V3
 - Add liquidity, remove liquidity, collect fees, and burn empty LP NFTs

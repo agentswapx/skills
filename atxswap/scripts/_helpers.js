@@ -164,19 +164,6 @@ export async function loadWallet(client, address, args) {
   }
 }
 
-export async function exportKey(client, address, args) {
-  try {
-    return await client.wallet.exportPrivateKey(address);
-  } catch {
-    if (args.password) {
-      return await client.wallet.exportPrivateKey(address, args.password);
-    }
-
-    const ttyPassword = await promptHidden(`Password for ${address}: `);
-    if (ttyPassword) {
-      return await client.wallet.exportPrivateKey(address, ttyPassword);
-    }
-
-    exitError(`Password required for ${address}: use --password <pwd> or run in an interactive terminal`);
-  }
+export function exportKeystore(client, address) {
+  return client.wallet.exportKeystore(address);
 }

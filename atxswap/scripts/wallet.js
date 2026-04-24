@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {
   createClient,
-  exportKey,
+  exportKeystore,
   getDefaultKeystorePath,
   parseArgs,
   fmt,
@@ -9,6 +9,8 @@ import {
   runMain,
   resolveNewPassword,
 } from "./_helpers.js";
+import { writeFileSync } from "node:fs";
+import { resolve as resolvePath } from "node:path";
 
 await runMain(async () => {
   const client = await createClient();
@@ -55,30 +57,26 @@ await runMain(async () => {
       break;
     }
 
-    case "import": {
-      const existing = client.wallet.list();
-      if (existing.length > 0) {
-        exitError(`Wallet already exists (${existing[0].address}). Only one wallet is allowed per skill instance.`);
-      }
-      const privateKey = args._[1];
-      if (!privateKey) exitError("Usage: wallet.js import <privateKey> [name] [--password <pwd>]");
-      const password = await resolveNewPassword(args);
-      const name = args._[2];
-      const result = await client.wallet.importPrivateKey(privateKey, password, name);
-      console.log(JSON.stringify({
-        action: "import",
-        address: result.address,
-        keystoreFile: result.keystoreFile,
-        keystoreDir: getDefaultKeystorePath(),
-      }, null, 2));
-      break;
-    }
-
     case "export": {
       const address = args._[1];
-      if (!address) exitError("Usage: wallet.js export <address> [--password <pwd>]");
-      const pk = await exportKey(client, address, args);
-      console.log(pk);
+      if (!address) {
+        exitError("Usage: wallet.js export <address> [--out <file>]");
+      }
+      const { keystore, keystoreFile } = exportKeystore(client, address);
+      const outPath = typeof args.out === "string" ? resolvePath(args.out) : null;
+      const json = JSON.stringify(keystore, null, 2);
+      if (outPath) {
+        writeFileSync(outPath, json);
+        console.log(JSON.stringify({
+          action: "export",
+          address,
+          format: "keystore-v3",
+          source: keystoreFile,
+          output: outPath,
+        }, null, 2));
+      } else {
+        console.log(json);
+      }
       break;
     }
 
@@ -99,6 +97,6 @@ await runMain(async () => {
     }
 
     default:
-      exitError("Usage: wallet.js <create|list|import|export|forget-password|has-password> [args] [--password <pwd>]");
+      exitError("Usage: wallet.js <create|list|export|forget-password|has-password> [args] [--password <pwd>]");
   }
 });

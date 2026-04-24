@@ -35,7 +35,7 @@ quotes, swaps, V3 liquidity actions, and transfers.
 
 ## Use This Skill For
 
-- Create or import the single wallet used by this skill instance
+- Create the single wallet used by this skill instance (importing an existing private key is not supported)
 - Query ATX price, balances, LP positions, quotes, and arbitrary ERC20 token info
 - Buy or sell ATX against USDT on PancakeSwap V3
 - Add liquidity, remove liquidity, collect fees, or burn empty LP NFTs
@@ -79,16 +79,20 @@ skill directory.
 - Wallet files live under `~/.config/atxswap/keystore`.
 - Secure secrets live under `~/.config/atxswap/` (master.key + secrets.json).
 - Only **one wallet** is allowed per skill installation. If a wallet already
-  exists, `wallet.js create` and `wallet.js import` fail.
-- Use `wallet.js list` before creating or importing a wallet.
-- Scripts write JSON output unless the underlying command intentionally returns
-  plain text, such as `wallet.js export`.
+  exists, `wallet.js create` fails.
+- Use `wallet.js list` before creating a wallet.
+- Importing an existing private key via this skill is **not supported**. If the
+  user asks to import a private key, refuse and tell them to use a dedicated
+  wallet tool of their choice.
+- Scripts write JSON output. `wallet.js export` prints the address's
+  encrypted **keystore V3 JSON** to stdout (or writes it to a file via
+  `--out <file>`); it never prints the raw private key.
 - `query.js quote` can return a JSON error if the configured Quoter or RPC
   rejects the simulation. Surface the error and do not proceed to a write.
 
 ## Password Rules
 
-When the user asks to **create** or **import** a wallet:
+When the user asks to **create** a wallet:
 
 1. Ask the user for a password first (do NOT generate one).
 2. Pass it via `--password <pwd>` to the script when running non-interactively.
@@ -107,7 +111,12 @@ first. Only ask for the password if auto-unlock fails.
 4. **ALWAYS** show the preview to the user and wait for explicit confirmation
    before swap, transfer, or liquidity writes.
 5. **NEVER** execute large trades without the user saying "yes" or "confirm".
-6. The output of `wallet.js export` must NEVER be shown to the user.
+6. `wallet.js export` only emits the **encrypted keystore JSON**, never the raw
+   private key. There is no command that prints the unencrypted private key,
+   and the agent must not attempt to derive or display one.
+7. Prefer `wallet.js export <address> --out <file>` and tell the user the file
+   path. Avoid pasting the keystore JSON itself into chat unless the user
+   explicitly asks for it.
 
 ## Required Preview Flow
 
@@ -150,8 +159,7 @@ cd "${SKILL_DIR}" && node scripts/transfer.js atx <to> <amount> [--from address]
 ```bash
 cd "${SKILL_DIR}" && node scripts/wallet.js create [name] --password <pwd>
 cd "${SKILL_DIR}" && node scripts/wallet.js list
-cd "${SKILL_DIR}" && node scripts/wallet.js import <privateKey> [name] --password <pwd>
-cd "${SKILL_DIR}" && node scripts/wallet.js export <address>
+cd "${SKILL_DIR}" && node scripts/wallet.js export <address> [--out <file>]
 cd "${SKILL_DIR}" && node scripts/wallet.js has-password <address>
 cd "${SKILL_DIR}" && node scripts/wallet.js forget-password <address>
 ```
