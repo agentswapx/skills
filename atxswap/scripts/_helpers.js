@@ -4,11 +4,20 @@ import { join } from "node:path";
 import readline from "node:readline";
 
 const DEFAULT_KEYSTORE_PATH = join(homedir(), ".config", "atxswap", "keystore");
-const DEFAULT_BSC_RPC_URL = "https://bsc-mainnet.infura.io";
+
+function parseRpcUrls(raw) {
+  if (!raw) return undefined;
+  const urls = raw
+    .split(",")
+    .map((url) => url.trim())
+    .filter((url) => url.length > 0);
+  return urls.length > 0 ? urls : undefined;
+}
 
 export async function createClient() {
+  const rpcUrls = parseRpcUrls(process.env.BSC_RPC_URL);
   const client = new AtxClient({
-    rpcUrl: process.env.BSC_RPC_URL || DEFAULT_BSC_RPC_URL,
+    ...(rpcUrls && { rpcUrls }),
     keystorePath: DEFAULT_KEYSTORE_PATH,
   });
   await client.ready();
