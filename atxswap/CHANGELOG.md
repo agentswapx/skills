@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.0.4
 
+- Bumped the bundled `atxswap-sdk` dependency to `^0.0.3` (required for the new
+  `WalletManager.exportKeystore()` API used by `wallet.js export`).
 - Removed `wallet.js import <privateKey>` and the public
   `WalletManager.importPrivateKey()` SDK method. Importing an existing private
   key is no longer supported through this skill or the underlying SDK; the only
