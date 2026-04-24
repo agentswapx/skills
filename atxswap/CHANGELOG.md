@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.6
+
+- Bumped the bundled `atxswap-sdk` dependency to `^0.0.5` so the skill picks up
+  the corrected `DEFAULT_CONTRACTS` (production ATX token + ATX/USDT pool
+  addresses on BSC mainnet). Required because npm semver treats `^0.0.x` as
+  pinned to that exact patch, so older dependency ranges would never have
+  resolved to `0.0.5`.
+- Version `0.0.5` was intentionally skipped to keep the skill release line
+  distinct from the SDK release line going forward.
+
 ## 0.0.4
 
 - Bumped the bundled `atxswap-sdk` dependency to `^0.0.3` (required for the new
