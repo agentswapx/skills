@@ -53,12 +53,11 @@ git clone https://github.com/agentswapx/skills.git
 cd skills/atxswap && npm install
 ```
 
-默认会使用内置的 8 个 BSC RPC 端点（Infura + 7 个 BNB Chain 公共节点）做
-fallback。如需覆盖，可将 `BSC_RPC_URL` 设为单个地址或逗号分隔的多个地址
-（按从左到右的优先级回退）：
+默认会使用内置的 8 个 BSC 公共 RPC 端点做 fallback。如需覆盖，可将
+`BSC_RPC_URL` 设为单个地址或逗号分隔的多个地址（按从左到右的优先级回退）：
 
 ```bash
-export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-mainnet.infura.io"
+export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-rpc.publicnode.com"
 ```
 
 ## 常用命令

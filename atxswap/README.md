@@ -54,12 +54,12 @@ git clone https://github.com/agentswapx/skills.git
 cd skills/atxswap && npm install
 ```
 
-By default the skill uses a built-in fallback list of 8 BSC RPC endpoints
-(Infura + 7 BNB Chain public nodes). To override, set `BSC_RPC_URL` to a single
-URL or to a comma-separated list (priority left to right):
+By default the skill uses a built-in fallback list of 8 BSC public RPC
+endpoints. To override, set `BSC_RPC_URL` to a single URL or to a
+comma-separated list (priority left to right):
 
 ```bash
-export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-mainnet.infura.io"
+export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-rpc.publicnode.com"
 ```
 
 ## Common Commands

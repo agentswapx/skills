@@ -74,8 +74,8 @@ skill directory.
 
 - `BSC_RPC_URL` is optional and supports comma-separated values for fallback,
   e.g. `BSC_RPC_URL="https://primary,https://backup1,https://backup2"`. When
-  unset, scripts use a built-in fallback list of 8 BSC RPC endpoints (Infura +
-  7 BNB Chain public nodes) and viem will retry them in order.
+  unset, scripts use a built-in fallback list of 8 BSC public RPC endpoints
+  and viem will retry them in order.
 - Wallet files live under `~/.config/atxswap/keystore`.
 - Secure secrets live under `~/.config/atxswap/` (master.key + secrets.json).
 - Only **one wallet** is allowed per skill installation. If a wallet already
