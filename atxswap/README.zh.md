@@ -1,6 +1,6 @@
 # ATXSwap 技能
 
-ATX 在 BSC 链上 ATXSwap 智能体交易所的技能包。同一份 `SKILL.md` 同时兼容以
+BSC 上 **ATXSwap** 智能体去中心化交换协议的技能包。同一份 `SKILL.md` 同时兼容以
 **Claude Code** 和 **OpenClaw** 为代表的客户端，无需为不同客户端维护多份目录。
 
 [**English**](./README.md)

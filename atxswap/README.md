@@ -1,6 +1,6 @@
 # ATXSwap Skill
 
-An ATXSwap agent exchange skill bundle for ATX on BSC. A single `SKILL.md`
+A skill bundle for the ATXSwap decentralized agent exchange protocol on BSC. A single `SKILL.md`
 works across clients represented by **Claude Code** and **OpenClaw**, so you do
 not need separate directories for different clients.
 

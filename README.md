@@ -3,7 +3,7 @@
 This directory is the index for the standalone skill packages in this
 repository.
 
-- [`atxswap/`](./atxswap/) — an ATXSwap agent exchange skill bundle for ATX on
+- [`atxswap/`](./atxswap/) — a skill bundle for the ATXSwap decentralized agent exchange protocol on
   BSC, with a single `SKILL.md` shared across clients represented by
   **Claude Code** and **OpenClaw**.
 
