@@ -9,6 +9,8 @@ ATX 在 BSC 链上 ATXSwap 智能体交易所的技能包。同一份 `SKILL.md`
 - **SDK (npm)**: [`atxswap-sdk`](https://www.npmjs.com/package/atxswap-sdk)
 - **SDK 源码 / 文档**: [agentswapx/atxswap-sdk](https://github.com/agentswapx/atxswap-sdk)
 
+项目背景与简要[团队介绍](https://docs.atxswap.com/zh/guide/team)见 ATXSwap 文档站（[English](https://docs.atxswap.com/guide/team)）。本文档说明技能能力与脚本用法。
+
 ## 能力范围
 
 - 为当前技能实例创建单个钱包（**不支持导入已有私钥**）

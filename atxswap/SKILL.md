@@ -30,6 +30,7 @@ agents that need safe, repeatable commands for wallet management, ATX/USDT
 quotes, swaps, V3 liquidity actions, and transfers.
 
 - **SDK**: [`atxswap-sdk`](https://www.npmjs.com/package/atxswap-sdk) on npm ([source](https://github.com/agentswapx/atxswap-sdk))
+- **Docs (team / project)**: [Team introduction](https://docs.atxswap.com/guide/team) · [团队介绍](https://docs.atxswap.com/zh/guide/team)
 - **Keystore dir**: `~/.config/atxswap/keystore` (fixed, not configurable)
 - **Secrets dir**: `~/.config/atxswap/` (master.key + secrets.json)
 

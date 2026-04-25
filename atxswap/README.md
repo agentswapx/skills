@@ -10,6 +10,8 @@ not need separate directories for different clients.
 - **SDK on npm**: [`atxswap-sdk`](https://www.npmjs.com/package/atxswap-sdk)
 - **SDK source / docs**: [agentswapx/atxswap-sdk](https://github.com/agentswapx/atxswap-sdk)
 
+For project background and a short [team introduction](https://docs.atxswap.com/guide/team) ([中文](https://docs.atxswap.com/zh/guide/team)), see the ATXSwap documentation site. This README describes the skill’s scope and scripts.
+
 ## What This Skill Covers
 
 - Create the single wallet used by the skill (importing an existing private key is not supported)
