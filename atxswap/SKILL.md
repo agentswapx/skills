@@ -102,6 +102,13 @@ When the user asks to **create** a wallet:
 For **swap**, **transfer**, and **liquidity** operations, rely on auto-unlock
 first. Only ask for the password if auto-unlock fails.
 
+If the user says they forgot the wallet password or asks to recover it, first
+explain that saved wallet passwords are encrypted at rest in the local
+SecretStore (for example Keychain, Secret Service, or the file backend under
+`~/.config/atxswap/`) and are not stored by the agent in chat memory. Even if
+the user confirms, do **not** print the password in chat; guide them to use a
+trusted local workflow instead.
+
 ## Hard Safety Rules
 
 1. Treat all BSC writes as real-asset operations.
@@ -117,6 +124,18 @@ first. Only ask for the password if auto-unlock fails.
 7. Prefer `wallet.js export <address> --out <file>` and tell the user the file
    path. Avoid pasting the keystore JSON itself into chat unless the user
    explicitly asks for it.
+8. Before deleting a wallet, keystore file, or any private-key-bearing wallet
+   material, **ALWAYS** remind the user to export and back up the encrypted
+   keystore first. Do not delete anything until the user explicitly confirms
+   that the keystore backup has been completed.
+9. If the user asks to recover or reveal a saved wallet password, remind them
+   that the password is encrypted in local secure storage and must not be
+   disclosed in chat. Do not attempt to print, derive, or expose the password
+   even after user confirmation.
+10. If the user asks to recover, reveal, print, or paste the wallet private key,
+    refuse. Offer `wallet.js export <address> --out <file>` as the only
+    supported backup path, because it exports an encrypted keystore instead of
+    exposing the raw private key.
 
 ## Required Preview Flow
 
@@ -203,6 +222,10 @@ cd "${SKILL_DIR}" && node scripts/transfer.js token <tokenAddress> <to> <amount>
 
 - Missing wallet but the user requests a write action
 - Missing confirmation for swap, transfer, or liquidity writes
+- User asks to delete a wallet, keystore file, or private-key-bearing wallet
+  material before confirming that the encrypted keystore has been backed up
+- User asks to recover or reveal a saved wallet password in chat
+- User asks to recover, reveal, print, or paste a wallet private key in chat
 - `npm install` has not been run successfully in the skill directory
 - RPC, dependency, or wallet-unlock errors that make the state unclear
 
