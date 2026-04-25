@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.8
+
+- Tightened `SKILL.md` safety guidance: before deleting a wallet/keystore, remind
+  the user to back up the encrypted keystore and wait for explicit confirmation
+  of backup. On forgotten-password and recovery requests, explain local
+  encrypted storage and **never** print passwords in chat. Refuse to reveal
+  or paste private keys; point users to `wallet.js export` (encrypted
+  keystore) only.
+
 ## 0.0.7
 
 - Bumped the bundled `atxswap-sdk` dependency to `^0.0.6` so the skill uses the
