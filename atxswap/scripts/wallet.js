@@ -32,6 +32,10 @@ await runMain(async () => {
         keystoreFile: result.keystoreFile,
         keystoreDir: getDefaultKeystorePath(),
         name: name || null,
+        passwordSaved: result.passwordSaved,
+        ...(result.passwordSaveError
+          ? { passwordSaveError: result.passwordSaveError }
+          : {}),
       }, null, 2));
       break;
     }

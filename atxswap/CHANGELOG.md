@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.7
+
+- Bumped the bundled `atxswap-sdk` dependency to `^0.0.6` so the skill uses the
+  cron/headless SecretStore fixes from SDK 0.0.6. Cron, SSH, and other
+  non-desktop Linux environments now fall back to the encrypted file backend
+  instead of failing on `secret-tool store`.
+- `wallet.js create` now includes `passwordSaved` and optional
+  `passwordSaveError` in its JSON output, making password persistence failures
+  visible without treating them as wallet-creation failures.
+
 ## 0.0.6
 
 - Bumped the bundled `atxswap-sdk` dependency to `^0.0.5` so the skill picks up
