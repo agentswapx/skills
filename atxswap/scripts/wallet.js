@@ -54,7 +54,9 @@ await runMain(async () => {
           entry.bnb = fmt(bal.bnb);
           entry.atx = fmt(bal.atx);
           entry.usdt = fmt(bal.usdt);
-        } catch {}
+        } catch (e) {
+          entry.balanceError = e?.shortMessage || e?.message?.split("\n")[0] || String(e);
+        }
         results.push(entry);
       }
       console.log(JSON.stringify({ wallets: results }, null, 2));
