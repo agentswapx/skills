@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.11
+
+- Bumped bundled `atxswap-sdk` to `^0.0.8` (npm maintenance release).
+
 ## 0.0.9
 
 - Bumped `atxswap-sdk` to `^0.0.7` so `wallet.js export` emits
