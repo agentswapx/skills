@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.12
+
+- Bumped bundled `atxswap-sdk` to `^0.0.9` (npm README / docs links).
+- `README` / `README.zh` / `SKILL.md`: link to ATXSwap documentation [team introduction](https://docs.atxswap.com/guide/team) pages.
+
 ## 0.0.11
 
 - Bumped bundled `atxswap-sdk` to `^0.0.8` (npm maintenance release).
