@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.13
+
+- Bumped bundled `atxswap-sdk` to `^0.0.10` (default slippage when omitted is now **1%** / `100` bps, was 3%).
+
 ## 0.0.12
 
 - Bumped bundled `atxswap-sdk` to `^0.0.9` (npm README / docs links).
