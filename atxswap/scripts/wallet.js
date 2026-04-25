@@ -66,7 +66,7 @@ await runMain(async () => {
       if (!address) {
         exitError("Usage: wallet.js export <address> [--out <file>]");
       }
-      const { keystore, keystoreFile } = exportKeystore(client, address);
+      const { keystore, keystoreFile } = await exportKeystore(client, address, args);
       const outPath = typeof args.out === "string" ? resolvePath(args.out) : null;
       const json = JSON.stringify(keystore, null, 2);
       if (outPath) {

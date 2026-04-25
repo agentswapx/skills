@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.9
+
+- Bumped `atxswap-sdk` to `^0.0.7` so `wallet.js export` emits
+  MetaMask-compatible encrypted keystore V3 JSON. SDK 0.0.7 uses the standard
+  Web3 Secret Storage MAC (`keccak256`) and can re-export legacy SDK keystores
+  without exposing raw private keys.
+
 ## 0.0.8
 
 - Tightened `SKILL.md` safety guidance: before deleting a wallet/keystore, remind

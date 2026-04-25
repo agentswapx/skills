@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
   mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
   selling, liquidity, fees, or token transfers.
-version: "0.0.8"
+version: "0.0.9"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -85,8 +85,8 @@ skill directory.
   user asks to import a private key, refuse and tell them to use a dedicated
   wallet tool of their choice.
 - Scripts write JSON output. `wallet.js export` prints the address's
-  encrypted **keystore V3 JSON** to stdout (or writes it to a file via
-  `--out <file>`); it never prints the raw private key.
+  encrypted **MetaMask-compatible keystore V3 JSON** to stdout (or writes it
+  to a file via `--out <file>`); it never prints the raw private key.
 - `query.js quote` can return a JSON error if the configured Quoter or RPC
   rejects the simulation. Surface the error and do not proceed to a write.
 
@@ -118,9 +118,10 @@ trusted local workflow instead.
 4. **ALWAYS** show the preview to the user and wait for explicit confirmation
    before swap, transfer, or liquidity writes.
 5. **NEVER** execute large trades without the user saying "yes" or "confirm".
-6. `wallet.js export` only emits the **encrypted keystore JSON**, never the raw
-   private key. There is no command that prints the unencrypted private key,
-   and the agent must not attempt to derive or display one.
+6. `wallet.js export` only emits the **encrypted MetaMask-compatible keystore
+   JSON**, never the raw private key. There is no command that prints the
+   unencrypted private key, and the agent must not attempt to derive or display
+   one.
 7. Prefer `wallet.js export <address> --out <file>` and tell the user the file
    path. Avoid pasting the keystore JSON itself into chat unless the user
    explicitly asks for it.

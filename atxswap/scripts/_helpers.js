@@ -164,6 +164,9 @@ export async function loadWallet(client, address, args) {
   }
 }
 
-export function exportKeystore(client, address) {
+export async function exportKeystore(client, address, args = {}) {
+  if (typeof client.wallet.exportMetaMaskKeystore === "function") {
+    return await client.wallet.exportMetaMaskKeystore(address, args.password);
+  }
   return client.wallet.exportKeystore(address);
 }
