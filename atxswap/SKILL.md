@@ -90,6 +90,9 @@ skill directory.
   to a file via `--out <file>`); it never prints the raw private key.
 - `query.js quote` can return a JSON error if the configured Quoter or RPC
   rejects the simulation. Surface the error and do not proceed to a write.
+- For custom-range liquidity, do **not** guess the second token amount from chat.
+  First run `liquidity.js quote-add` or use `liquidity.js add --base-token ... --amount ...`
+  so the script computes the counter-asset from the live pool price and range.
 
 ## Password Rules
 
@@ -170,6 +173,7 @@ cd "${SKILL_DIR}" && node scripts/query.js quote <buy|sell> <amount>
 ```bash
 cd "${SKILL_DIR}" && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [range opts] [--from address] [--slippage-bps n] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js add --base-token <atx|usdt> --amount <n> [range opts] [--from address] [--slippage-bps n] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
 ```
 
@@ -209,12 +213,17 @@ cd "${SKILL_DIR}" && node scripts/swap.js sell <atxAmount> [--from address] [--s
 - 默认: 不附加参数即 **全范围**（与原先行为相同）。
 - `--full-range`：显式全范围（勿与下面两类同时使用）。
 - `--min-price` / `--max-price`：按 **1 ATX 多少 USDT** 的区间，脚本会读池子 `token0`、用与前端相同的 `token1/token0`+`tickSpacing` 换算为 `tickLower` / `tickUpper`（需**同时**提供两个价格）。
+- `--range-percent`：以**当前 ATX 价格**为中心，按百分比展开上下界；例如 `20` 表示当前价的 `-20% ~ +20%` 区间。
 - `--tick-lower` / `--tick-upper`：直接指定 V3 `tick`（需**同时**提供；脚本会取二者较小者为下界、较大者为上界，并限制在 V3 允许范围内）。
+- `quote-add <atx|usdt> <amount>`：按实时池价和所选区间，计算另一边需要多少代币，适合作为写入前预估。
+- `add --base-token <atx|usdt> --amount <n>`：只给一边金额，由脚本自动配平另一边，然后直接执行写入。
 
 可选：`--slippage-bps`（0–10000，默认由 SDK 决定）。
 
 ```bash
+cd "${SKILL_DIR}" && node scripts/liquidity.js quote-add <atx|usdt> <amount> [range opts]
 cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [range opts] [--from address] [--slippage-bps n] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js add --base-token <atx|usdt> --amount <n> [range opts] [--from address] [--slippage-bps n] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
@@ -223,9 +232,19 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js burn <tokenId> [--from address] [
 示例（非全宽；区间请先用 `query.js price` 与用户对齐后再执行写入）:
 
 ```bash
+cd "${SKILL_DIR}" && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
+cd "${SKILL_DIR}" && node scripts/liquidity.js add --base-token usdt --amount 0.1 --range-percent 20 --from <address>
 cd "${SKILL_DIR}" && node scripts/liquidity.js add 10 1 --min-price 0.05 --max-price 0.15
 cd "${SKILL_DIR}" && node scripts/liquidity.js add 10 1 --tick-lower -20000 --tick-upper 1000
 ```
+
+对话映射建议:
+
+- 用户说“添加 `0.1u` 的流动性，价格区间 `20%`”时，先执行
+  `quote-add usdt 0.1 --range-percent 20`
+- 把返回的 `estimatedAmounts` 展示给用户确认
+- 得到确认后，再执行
+  `add --base-token usdt --amount 0.1 --range-percent 20 --from <address>`
 
 ### `transfer.js`
 
