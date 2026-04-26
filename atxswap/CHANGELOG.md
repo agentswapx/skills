@@ -3,6 +3,7 @@
 ## 0.0.16
 
 - ClawHub registry publish (no functional change from 0.0.15 bundle).
+- Workspace: bundled `atxswap-sdk` raised to `^0.0.12` (npm 0.0.12); republish skill to ClawHub to ship in the registry tarball.
 
 ## 0.0.14
 
