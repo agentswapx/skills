@@ -1,6 +1,40 @@
 #!/usr/bin/env node
 import { createClient, parseArgs, fmt, runMain } from "./_helpers.js";
-import { parseEther } from "atxswap-sdk";
+import { parseEther, npmAbi, MAX_UINT128 } from "atxswap-sdk";
+
+async function previewCollectableFees(client, address, tokenId, position) {
+  if (typeof client.query.previewCollectFees === "function") {
+    try {
+      const quote = await client.query.previewCollectFees(address, tokenId);
+      return { amount0: quote.amount0, amount1: quote.amount1 };
+    } catch {
+      // Fall back to raw simulation for older SDK versions.
+    }
+  }
+
+  try {
+    const result = await client.publicClient.simulateContract({
+      account: address,
+      address: client.contracts.npm,
+      abi: npmAbi,
+      functionName: "collect",
+      args: [
+        {
+          tokenId,
+          recipient: address,
+          amount0Max: MAX_UINT128,
+          amount1Max: MAX_UINT128,
+        },
+      ],
+    });
+    return { amount0: result.result[0], amount1: result.result[1] };
+  } catch {
+    return {
+      amount0: position?.collectable0 ?? position?.tokensOwed0 ?? 0n,
+      amount1: position?.collectable1 ?? position?.tokensOwed1 ?? 0n,
+    };
+  }
+}
 
 await runMain(async () => {
   const client = await createClient();
@@ -48,12 +82,23 @@ await runMain(async () => {
 
     case "positions": {
       const address = args._[1];
-      if (!address) { console.error("Usage: query.js positions <address>"); process.exit(1); }
-      const positions = await client.query.getPositions(address);
+      const tokenId = args._[2];
+      if (!address) { console.error("Usage: query.js positions <address> [tokenId]"); process.exit(1); }
+      const queriedPositions = await client.query.getPositions(address, {
+        includeCollectableFees: true,
+        ...(tokenId ? { tokenId: BigInt(tokenId) } : {}),
+      });
+      const positions = tokenId
+        ? queriedPositions.filter((position) => position.tokenId === BigInt(tokenId))
+        : queriedPositions;
       if (positions.length === 0) {
         console.log("No ATX/USDT positions found.");
       } else {
         for (const p of positions) {
+          const isAtxToken0 = p.token0.toLowerCase() === client.contracts.atx.toLowerCase();
+          const collectable = await previewCollectableFees(client, address, p.tokenId, p);
+          const collectable0 = collectable.amount0;
+          const collectable1 = collectable.amount1;
           console.log(JSON.stringify({
             tokenId: p.tokenId.toString(),
             fee: p.fee,
@@ -62,6 +107,10 @@ await runMain(async () => {
             liquidity: p.liquidity.toString(),
             tokensOwed0: fmt(p.tokensOwed0),
             tokensOwed1: fmt(p.tokensOwed1),
+            collectable0: fmt(collectable0),
+            collectable1: fmt(collectable1),
+            collectableAtx: fmt(isAtxToken0 ? collectable0 : collectable1),
+            collectableUsdt: fmt(isAtxToken0 ? collectable1 : collectable0),
           }, null, 2));
         }
       }

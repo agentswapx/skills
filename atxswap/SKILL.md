@@ -160,6 +160,7 @@ Before every write action:
 cd "${SKILL_DIR}" && node scripts/query.js price
 cd "${SKILL_DIR}" && node scripts/query.js balance <address>
 cd "${SKILL_DIR}" && node scripts/query.js positions <address>
+cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 ```
 
 ### Preview before swap
@@ -196,8 +197,14 @@ cd "${SKILL_DIR}" && node scripts/query.js price
 cd "${SKILL_DIR}" && node scripts/query.js balance <address>
 cd "${SKILL_DIR}" && node scripts/query.js quote <buy|sell> <amount>
 cd "${SKILL_DIR}" && node scripts/query.js positions <address>
+cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 cd "${SKILL_DIR}" && node scripts/query.js token-info <tokenAddress>
 ```
+
+`query.js positions` now includes both the raw `tokensOwed0/1` fields from `positions()`
+and `collectable0/1`, `collectableAtx`, `collectableUsdt` computed from a simulated
+`collect()` call. Use the `collectable*` fields to decide whether a fee harvest is worth
+executing.
 
 ### `swap.js`
 
@@ -228,6 +235,16 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js remove <tokenId> <percent> [--fro
 cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
 ```
+
+Before `collect`, preview the target position with:
+
+```bash
+cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
+```
+
+Prefer `collectableAtx` / `collectableUsdt` over `tokensOwed0/1` when deciding whether
+fees are available, because the raw `tokensOwed` fields may stay at zero while
+`collect()` can still succeed.
 
 示例（非全宽；区间请先用 `query.js price` 与用户对齐后再执行写入）:
 

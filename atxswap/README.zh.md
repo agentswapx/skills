@@ -68,6 +68,7 @@ export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-dataseed.bnbc
 cd skills/atxswap && node scripts/wallet.js list
 cd skills/atxswap && node scripts/query.js price
 cd skills/atxswap && node scripts/query.js quote buy 1
+cd skills/atxswap && node scripts/query.js positions <address> <tokenId>
 cd skills/atxswap && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
 ```
 
@@ -95,6 +96,19 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js add --base-token usdt --amount 0.
 2. 把返回的 `estimatedAmounts` 展示给用户
 3. 等用户确认
 4. 再执行 `liquidity.js add`
+
+## 手续费预览
+
+收手续费前，先预览目标仓位：
+
+```bash
+cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
+cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address>
+```
+
+`query.js positions` 现在会同时返回 `positions()` 原始的 `tokensOwed0/1`
+以及通过模拟 `collect()` 得到的 `collectable0/1`、`collectableAtx`、
+`collectableUsdt`。判断是否值得收割时，应优先看 `collectable*` 字段。
 
 ## 安全规则
 

@@ -70,6 +70,7 @@ export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-dataseed.bnbc
 cd skills/atxswap && node scripts/wallet.js list
 cd skills/atxswap && node scripts/query.js price
 cd skills/atxswap && node scripts/query.js quote buy 1
+cd skills/atxswap && node scripts/query.js positions <address> <tokenId>
 cd skills/atxswap && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
 ```
 
@@ -98,6 +99,20 @@ Recommended flow:
 2. Show the returned `estimatedAmounts` to the user
 3. Wait for confirmation
 4. Execute `liquidity.js add`
+
+## Fee Harvest Preview
+
+Before collecting fees, preview the position first:
+
+```bash
+cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
+cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address>
+```
+
+`query.js positions` now returns both the raw `tokensOwed0/1` fields from
+`positions()` and simulated `collectable0/1`, `collectableAtx`, `collectableUsdt`
+values. Use the `collectable*` fields to decide whether a position has harvestable
+fees.
 
 ## Security Rules
 
