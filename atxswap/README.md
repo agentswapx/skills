@@ -56,12 +56,12 @@ git clone https://github.com/agentswapx/skills.git
 cd skills/atxswap && npm install
 ```
 
-By default the skill uses a built-in fallback list of 8 BSC public RPC
+By default the skill uses a built-in fallback list of 6 BSC public RPC
 endpoints. To override, set `BSC_RPC_URL` to a single URL or to a
 comma-separated list (priority left to right):
 
 ```bash
-export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-rpc.publicnode.com"
+export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-dataseed.bnbchain.org"
 ```
 
 ## Common Commands
