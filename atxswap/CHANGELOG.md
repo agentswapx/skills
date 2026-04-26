@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.18
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.13` (npm 0.0.13).
+
 ## 0.0.17
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.12` (npm 0.0.12).
