@@ -372,6 +372,77 @@ function toAmountInput(wei) {
   return value.includes(".") ? value.replace(/\.?0+$/, "") : value;
 }
 
+function parseSlippageBps(args) {
+  if (args["slippage-bps"] === undefined || args["slippage-bps"] === true) {
+    return undefined;
+  }
+  const value = parseInt(String(args["slippage-bps"]), 10);
+  if (!Number.isFinite(value) || value < 0 || value > 10_000) {
+    exitError("slippage-bps must be between 0 and 10000");
+  }
+  return value;
+}
+
+function buildSdkRangeArgs(args) {
+  const { hasTick, hasPrice, hasRangePercent } = normalizeRangeMode(args);
+  if (hasPrice) {
+    const minPrice = parseFloat(String(args["min-price"]));
+    const maxPrice = parseFloat(String(args["max-price"]));
+    if (!Number.isFinite(minPrice) || !Number.isFinite(maxPrice) || minPrice <= 0 || maxPrice <= 0) {
+      exitError("min-price and max-price must be positive numbers (USDT per 1 ATX)");
+    }
+    return { minPrice, maxPrice };
+  }
+  if (hasRangePercent) {
+    return { rangePercent: parsePercentValue(args["range-percent"], "range-percent") };
+  }
+  if (hasTick) {
+    const tickLower = parseInt(String(args["tick-lower"]), 10);
+    const tickUpper = parseInt(String(args["tick-upper"]), 10);
+    if (!Number.isFinite(tickLower) || !Number.isFinite(tickUpper)) {
+      exitError("tick-lower and tick-upper must be integers");
+    }
+    return { tickLower, tickUpper };
+  }
+  return { fullRange: true };
+}
+
+async function quoteViaSdk(client, baseToken, amountRaw, args) {
+  if (typeof client.liquidity.quoteAddLiquidity !== "function") {
+    return null;
+  }
+  return await client.liquidity.quoteAddLiquidity({
+    baseToken,
+    amount: parseEther(amountRaw),
+    range: buildSdkRangeArgs(args),
+    slippageBps: parseSlippageBps(args),
+  });
+}
+
+function sdkQuoteToJson(result, extra = {}) {
+  return {
+    currentPrice: result.currentPrice,
+    range: {
+      ...result.range,
+      tickSpacing: result.pool.tickSpacing,
+      isAtxToken0: result.pool.isAtxToken0,
+    },
+    estimatedAmounts: {
+      atx: fmt(result.desiredAmounts.atx),
+      usdt: fmt(result.desiredAmounts.usdt),
+      atxWei: result.desiredAmounts.atx.toString(),
+      usdtWei: result.desiredAmounts.usdt.toString(),
+    },
+    minAmounts: {
+      atx: fmt(result.minAmounts.atx),
+      usdt: fmt(result.minAmounts.usdt),
+      atxWei: result.minAmounts.atx.toString(),
+      usdtWei: result.minAmounts.usdt.toString(),
+    },
+    ...extra,
+  };
+}
+
 await runMain(async () => {
   const client = await createClient();
   const args = parseArgs(process.argv.slice(2));
@@ -393,6 +464,21 @@ await runMain(async () => {
         exitError(
           "Usage: liquidity.js quote-add <atx|usdt> <amount> [--full-range] [--tick-lower n --tick-upper n] [--min-price p --max-price p] [--range-percent n]",
         );
+      }
+
+      const sdkQuote = await quoteViaSdk(client, baseToken, amount, args);
+      if (sdkQuote) {
+        console.log(
+          JSON.stringify(
+            sdkQuoteToJson(sdkQuote, {
+              action: "quote add liquidity",
+              input: { baseToken, amount },
+            }),
+            null,
+            2,
+          ),
+        );
+        break;
       }
 
       const ctx = await getPoolContext(client);
@@ -459,31 +545,48 @@ await runMain(async () => {
         usdtAmount = positionalUsdtAmount;
       } else {
         const baseToken = parseBaseToken(args["base-token"]);
-        const quoted = resolveSingleSidedAmounts(
-          ctx,
-          range.tickLower,
-          range.tickUpper,
-          baseToken,
-          String(args.amount),
-        );
-        atxAmount = toAmountInput(quoted.atxAmount);
-        usdtAmount = toAmountInput(quoted.usdtAmount);
-        meta = {
-          ...meta,
-          autoBalanced: true,
-          input: quoted.meta,
-          estimatedAmounts: {
-            atx: fmt(quoted.atxAmount),
-            usdt: fmt(quoted.usdtAmount),
-          },
-        };
+        const sdkQuote = await quoteViaSdk(client, baseToken, String(args.amount), args);
+        if (sdkQuote) {
+          atxAmount = toAmountInput(sdkQuote.desiredAmounts.atx);
+          usdtAmount = toAmountInput(sdkQuote.desiredAmounts.usdt);
+          meta = {
+            ...meta,
+            autoBalanced: true,
+            input: {
+              baseToken,
+              amount: String(args.amount),
+              needAtx: sdkQuote.needs.atx,
+              needUsdt: sdkQuote.needs.usdt,
+            },
+            estimatedAmounts: {
+              atx: fmt(sdkQuote.desiredAmounts.atx),
+              usdt: fmt(sdkQuote.desiredAmounts.usdt),
+            },
+          };
+        } else {
+          const quoted = resolveSingleSidedAmounts(
+            ctx,
+            range.tickLower,
+            range.tickUpper,
+            baseToken,
+            String(args.amount),
+          );
+          atxAmount = toAmountInput(quoted.atxAmount);
+          usdtAmount = toAmountInput(quoted.usdtAmount);
+          meta = {
+            ...meta,
+            autoBalanced: true,
+            input: quoted.meta,
+            estimatedAmounts: {
+              atx: fmt(quoted.atxAmount),
+              usdt: fmt(quoted.usdtAmount),
+            },
+          };
+        }
       }
 
-      if (args["slippage-bps"] !== undefined && args["slippage-bps"] !== true) {
-        const b = parseInt(String(args["slippage-bps"]), 10);
-        if (!Number.isFinite(b) || b < 0 || b > 10_000) {
-          exitError("slippage-bps must be between 0 and 10000");
-        }
+      const b = parseSlippageBps(args);
+      if (b !== undefined) {
         liqOptions = { ...liqOptions, slippageBps: b };
         meta = { ...meta, slippageBps: b };
       }
