@@ -1,40 +1,6 @@
 #!/usr/bin/env node
 import { createClient, parseArgs, fmt, runMain } from "./_helpers.js";
-import { parseEther, npmAbi, MAX_UINT128 } from "atxswap-sdk";
-
-async function previewCollectableFees(client, address, tokenId, position) {
-  if (typeof client.query.previewCollectFees === "function") {
-    try {
-      const quote = await client.query.previewCollectFees(address, tokenId);
-      return { amount0: quote.amount0, amount1: quote.amount1 };
-    } catch {
-      // Fall back to raw simulation for older SDK versions.
-    }
-  }
-
-  try {
-    const result = await client.publicClient.simulateContract({
-      account: address,
-      address: client.contracts.npm,
-      abi: npmAbi,
-      functionName: "collect",
-      args: [
-        {
-          tokenId,
-          recipient: address,
-          amount0Max: MAX_UINT128,
-          amount1Max: MAX_UINT128,
-        },
-      ],
-    });
-    return { amount0: result.result[0], amount1: result.result[1] };
-  } catch {
-    return {
-      amount0: position?.collectable0 ?? position?.tokensOwed0 ?? 0n,
-      amount1: position?.collectable1 ?? position?.tokensOwed1 ?? 0n,
-    };
-  }
-}
+import { parseEther } from "atxswap-sdk";
 
 await runMain(async () => {
   const client = await createClient();
@@ -96,9 +62,8 @@ await runMain(async () => {
       } else {
         for (const p of positions) {
           const isAtxToken0 = p.token0.toLowerCase() === client.contracts.atx.toLowerCase();
-          const collectable = await previewCollectableFees(client, address, p.tokenId, p);
-          const collectable0 = collectable.amount0;
-          const collectable1 = collectable.amount1;
+          const collectable0 = p.collectable0 ?? p.tokensOwed0;
+          const collectable1 = p.collectable1 ?? p.tokensOwed1;
           console.log(JSON.stringify({
             tokenId: p.tokenId.toString(),
             fee: p.fee,
