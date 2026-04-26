@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.14
+
+- Bumped bundled `atxswap-sdk` to `^0.0.11` (BSC `DEFAULT_RPC_URLS`: 6 endpoints, `bsc-dataseed.bnbchain.org` first).
+
 ## 0.0.13
 
 - Bumped bundled `atxswap-sdk` to `^0.0.10` (default slippage when omitted is now **1%** / `100` bps, was 3%).
