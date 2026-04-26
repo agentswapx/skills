@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
   mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
   selling, liquidity, fees, or token transfers.
-version: "0.0.14"
+version: "0.0.15"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -39,7 +39,7 @@ quotes, swaps, V3 liquidity actions, and transfers.
 - Create the single wallet used by this skill instance (importing an existing private key is not supported)
 - Query ATX price, balances, LP positions, quotes, and arbitrary ERC20 token info
 - Buy or sell ATX against USDT on PancakeSwap V3
-- Add liquidity, remove liquidity, collect fees, or burn empty LP NFTs
+- Add liquidity (full range or a custom **price range in USDT per ATX** or **tick** bounds), remove liquidity, collect fees, or burn empty LP NFTs
 - Transfer BNB, ATX, USDT, or arbitrary ERC20 tokens
 
 ## Before First Use
@@ -169,7 +169,7 @@ cd "${SKILL_DIR}" && node scripts/query.js quote <buy|sell> <amount>
 
 ```bash
 cd "${SKILL_DIR}" && node scripts/swap.js buy <usdtAmount> [--from address] [--slippage bps] [--password <pwd>]
-cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [range opts] [--from address] [--slippage-bps n] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/transfer.js atx <to> <amount> [--from address] [--password <pwd>]
 ```
 
@@ -204,11 +204,27 @@ cd "${SKILL_DIR}" && node scripts/swap.js sell <atxAmount> [--from address] [--s
 
 ### `liquidity.js`
 
+**`add` — price / tick 区间**（与前端「USDT/ATX」一致；默认全价格区间=全宽流动性）:
+
+- 默认: 不附加参数即 **全范围**（与原先行为相同）。
+- `--full-range`：显式全范围（勿与下面两类同时使用）。
+- `--min-price` / `--max-price`：按 **1 ATX 多少 USDT** 的区间，脚本会读池子 `token0`、用与前端相同的 `token1/token0`+`tickSpacing` 换算为 `tickLower` / `tickUpper`（需**同时**提供两个价格）。
+- `--tick-lower` / `--tick-upper`：直接指定 V3 `tick`（需**同时**提供；脚本会取二者较小者为下界、较大者为上界，并限制在 V3 允许范围内）。
+
+可选：`--slippage-bps`（0–10000，默认由 SDK 决定）。
+
 ```bash
-cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [--from address] [--password <pwd>]
+cd "${SKILL_DIR}" && node scripts/liquidity.js add <atxAmount> <usdtAmount> [range opts] [--from address] [--slippage-bps n] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js remove <tokenId> <percent> [--from address] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> [--from address] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
+```
+
+示例（非全宽；区间请先用 `query.js price` 与用户对齐后再执行写入）:
+
+```bash
+cd "${SKILL_DIR}" && node scripts/liquidity.js add 10 1 --min-price 0.05 --max-price 0.15
+cd "${SKILL_DIR}" && node scripts/liquidity.js add 10 1 --tick-lower -20000 --tick-upper 1000
 ```
 
 ### `transfer.js`
