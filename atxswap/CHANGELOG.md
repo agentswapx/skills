@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.16
+
+- ClawHub registry publish (no functional change from 0.0.15 bundle).
+
 ## 0.0.14
 
 - Bumped bundled `atxswap-sdk` to `^0.0.11` (BSC `DEFAULT_RPC_URLS`: 6 endpoints, `bsc-dataseed.bnbchain.org` first).
