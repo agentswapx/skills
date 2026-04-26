@@ -16,7 +16,7 @@ BSC 上 **ATXSwap** 智能体去中心化交换协议的技能包。同一份 `S
 - 为当前技能实例创建单个钱包（**不支持导入已有私钥**）
 - 查询 ATX 价格、余额、LP 仓位和 ERC20 代币信息
 - 在 PancakeSwap V3 上买卖 ATX/USDT
-- 添加流动性、减仓、收手续费、销毁空仓位 NFT
+- 预估自定义区间流动性、添加流动性、减仓、收手续费、销毁空仓位 NFT
 - 转账 BNB、ATX、USDT 或任意 ERC20 代币
 
 ## 目录结构
@@ -68,10 +68,33 @@ export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-dataseed.bnbc
 cd skills/atxswap && node scripts/wallet.js list
 cd skills/atxswap && node scripts/query.js price
 cd skills/atxswap && node scripts/query.js quote buy 1
+cd skills/atxswap && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
 ```
 
 在支持 `${SKILL_DIR}` 注入的运行时中，建议使用 `cd "${SKILL_DIR}"`，以便技能
 能在客户端管理的任意安装目录下正常运行。
+
+## 流动性预估
+
+做自定义区间流动性时，不要在对话里直接猜另一边代币数量。建议先预估，再执行写入：
+
+```bash
+cd "${SKILL_DIR}" && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
+cd "${SKILL_DIR}" && node scripts/liquidity.js add --base-token usdt --amount 0.1 --range-percent 20 --from <address>
+```
+
+支持的区间模式：
+
+- `--range-percent <n>`：以当前 ATX 价格为中心展开，例如 `20` 表示 `-20% ~ +20%`
+- `--min-price <p> --max-price <p>`：显式指定 `1 ATX = 多少 USDT`
+- `--tick-lower <n> --tick-upper <n>`：直接指定 V3 tick
+
+推荐流程：
+
+1. 先执行 `query.js price` 或 `liquidity.js quote-add`
+2. 把返回的 `estimatedAmounts` 展示给用户
+3. 等用户确认
+4. 再执行 `liquidity.js add`
 
 ## 安全规则
 

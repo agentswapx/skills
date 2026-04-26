@@ -17,7 +17,7 @@ For project background and a short [team introduction](https://docs.atxswap.com/
 - Create the single wallet used by the skill (importing an existing private key is not supported)
 - Query ATX price, balances, LP positions, and ERC20 token info
 - Buy or sell ATX against USDT on PancakeSwap V3
-- Add liquidity, remove liquidity, collect fees, and burn empty LP NFTs
+- Preview custom-range liquidity, add liquidity, remove liquidity, collect fees, and burn empty LP NFTs
 - Transfer BNB, ATX, USDT, or arbitrary ERC20 tokens
 
 ## Directory Layout
@@ -70,10 +70,34 @@ export BSC_RPC_URL="https://my-private-rpc.example.com,https://bsc-dataseed.bnbc
 cd skills/atxswap && node scripts/wallet.js list
 cd skills/atxswap && node scripts/query.js price
 cd skills/atxswap && node scripts/query.js quote buy 1
+cd skills/atxswap && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
 ```
 
 When invoked through a `${SKILL_DIR}`-aware runtime, `cd "${SKILL_DIR}"` is
 preferred so the skill works regardless of where the client installed it.
+
+## Liquidity Preview
+
+For custom-range liquidity, do not guess the second token amount from chat.
+Preview first, then write:
+
+```bash
+cd "${SKILL_DIR}" && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
+cd "${SKILL_DIR}" && node scripts/liquidity.js add --base-token usdt --amount 0.1 --range-percent 20 --from <address>
+```
+
+Supported custom range modes:
+
+- `--range-percent <n>`: expands around the current ATX price, e.g. `20` means `-20% ~ +20%`
+- `--min-price <p> --max-price <p>`: explicit `USDT per 1 ATX`
+- `--tick-lower <n> --tick-upper <n>`: raw V3 ticks
+
+Recommended flow:
+
+1. Run `query.js price` or `liquidity.js quote-add`
+2. Show the returned `estimatedAmounts` to the user
+3. Wait for confirmation
+4. Execute `liquidity.js add`
 
 ## Security Rules
 
