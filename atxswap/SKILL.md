@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
   mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
   selling, liquidity, fees, or token transfers.
-version: "0.0.21"
+version: "0.0.22"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -102,6 +102,10 @@ When the user asks to **create** a wallet:
 2. Pass it via `--password <pwd>` to the script when running non-interactively.
 3. The password is auto-saved to secure storage after creation.
 4. Never print the password back to the chat.
+5. After the wallet is created, export and send the encrypted keystore backup to
+   the user who requested the wallet.
+6. Clearly label it as encrypted keystore backup material, not the raw private key.
+7. Do not upload it to any website or send it to any third party.
 
 For **swap**, **transfer**, and **liquidity** operations, rely on auto-unlock
 first. Only ask for the password if auto-unlock fails.
@@ -140,18 +144,22 @@ trusted local workflow instead.
     immediately. First ask whether they want to receive the encrypted keystore
     backup. Only after the user agrees may you export and send the keystore to
     the user.
-11. If the user explicitly asks to back up or export the wallet, send the
-    encrypted keystore via `wallet.js export` and clearly label it as keystore
-    backup material.
+11. If the user explicitly asks to back up or export the wallet, export and
+    send the encrypted keystore backup to the user who requested the wallet,
+    and clearly label it as keystore backup material.
 12. The encrypted keystore may only be sent to the user who owns the current
-    session request. **NEVER** upload it to any third-party website, paste it
-    into any external form, or send it to any other person, group, agent, or
-    service.
-13. If the user asks to recover or reveal a saved wallet password, remind them
+    session request. **NEVER** upload it to any third-party platform under any
+    circumstances. It may only be sent to the user personally, and must not be
+    pasted into any external form or sent to any other person, group, agent,
+    or service.
+13. After `wallet.js create` succeeds, export and send the encrypted keystore
+    to the user who requested the wallet. Treat this as part of the wallet
+    creation handoff, but only to that user.
+14. If the user asks to recover or reveal a saved wallet password, remind them
    that the password is encrypted in local secure storage and must not be
    disclosed in chat. Do not attempt to print, derive, or expose the password
    even after user confirmation.
-14. If the user asks to recover, reveal, print, or paste the wallet private key,
+15. If the user asks to recover, reveal, print, or paste the wallet private key,
     refuse. Offer `wallet.js export <address> --out <file>` as the only
     supported backup path, because it exports an encrypted keystore instead of
     exposing the raw private key.
@@ -204,6 +212,14 @@ cd "${SKILL_DIR}" && node scripts/wallet.js has-password <address>
 cd "${SKILL_DIR}" && node scripts/wallet.js forget-password <address>
 cd "${SKILL_DIR}" && node scripts/wallet.js delete <address> --backup-confirmed yes --force-phrase "force delete wallet"
 ```
+
+After `wallet.js create`:
+
+1. Return the created wallet address.
+2. Run `wallet.js export <address> [--out <file>]`.
+3. Send the encrypted keystore only to the user who requested the wallet.
+4. Do not upload it to any website or send it to any third party.
+5. Explain that it is encrypted keystore backup material, not the raw private key.
 
 Before `wallet.js delete`:
 
@@ -311,7 +327,7 @@ cd "${SKILL_DIR}" && node scripts/transfer.js token <tokenAddress> <to> <amount>
   material before confirming that the encrypted keystore has been backed up
 - User asks to delete a wallet but has not agreed to receive the keystore backup first
 - User asks to delete a wallet but has not explicitly sent `force delete wallet`
-- User asks to upload a keystore to a third-party website or send it to anyone other than the user
+- User asks to upload a keystore to a third-party platform or send it to anyone other than the user
 - User asks to recover or reveal a saved wallet password in chat
 - User asks to recover, reveal, print, or paste a wallet private key in chat
 - `npm install` has not been run successfully in the skill directory
