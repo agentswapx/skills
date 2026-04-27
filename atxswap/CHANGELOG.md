@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.23
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14); `SKILL.md` hard-safety keystore channel wording (English).
+
 ## 0.0.22
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14).

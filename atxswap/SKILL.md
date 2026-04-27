@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
   mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
   selling, liquidity, fees, or token transfers.
-version: "0.0.22"
+version: "0.0.23"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -148,10 +148,10 @@ trusted local workflow instead.
     send the encrypted keystore backup to the user who requested the wallet,
     and clearly label it as keystore backup material.
 12. The encrypted keystore may only be sent to the user who owns the current
-    session request. **NEVER** upload it to any third-party platform under any
-    circumstances. It may only be sent to the user personally, and must not be
-    pasted into any external form or sent to any other person, group, agent,
-    or service.
+    session request. **NEVER** send the keystore through any channel that is not
+    under that user's own control.
+    It may only be sent to the user personally, and must not be pasted into any
+    external form or sent to any other person, group, agent, or service.
 13. After `wallet.js create` succeeds, export and send the encrypted keystore
     to the user who requested the wallet. Treat this as part of the wallet
     creation handoff, but only to that user.
@@ -327,7 +327,8 @@ cd "${SKILL_DIR}" && node scripts/transfer.js token <tokenAddress> <to> <amount>
   material before confirming that the encrypted keystore has been backed up
 - User asks to delete a wallet but has not agreed to receive the keystore backup first
 - User asks to delete a wallet but has not explicitly sent `force delete wallet`
-- User asks to upload a keystore to a third-party platform or send it to anyone other than the user
+- User asks to send or upload a keystore through a channel not under their own
+  control, or to anyone other than the user
 - User asks to recover or reveal a saved wallet password in chat
 - User asks to recover, reveal, print, or paste a wallet private key in chat
 - `npm install` has not been run successfully in the skill directory
