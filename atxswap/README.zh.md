@@ -116,3 +116,18 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address
 2. 所有写操作前，必须先预览价格、报价、余额或仓位。
 3. 交换、转账、流动性操作前，必须等待用户明确确认。
 4. 所有写操作都按主网真实资产处理。
+5. 删除钱包前，必须先要求用户导出并备份加密 keystore。
+6. 删除钱包还需要第二次确认：用户必须明确发送 `force delete wallet`。
+
+## 删除钱包
+
+只有在以下两个条件都满足后，才能删除钱包：
+
+1. 用户已明确确认加密 keystore 备份完成
+2. 用户已明确发送 `force delete wallet`
+
+然后再执行：
+
+```bash
+cd "${SKILL_DIR}" && node scripts/wallet.js delete <address> --backup-confirmed yes --force-phrase "force delete wallet"
+```

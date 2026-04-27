@@ -120,3 +120,18 @@ fees.
 2. Always preview price, quote, balance, or positions before write actions.
 3. Always wait for explicit user confirmation before swap, transfer, or liquidity writes.
 4. Treat all write actions as mainnet asset operations.
+5. Before deleting a wallet, require the user to export and back up the encrypted keystore first.
+6. Wallet deletion requires a second confirmation: the user must explicitly send `force delete wallet`.
+
+## Wallet Deletion
+
+Delete a wallet only after both confirmations are complete:
+
+1. The user confirms the encrypted keystore backup is done
+2. The user explicitly sends `force delete wallet`
+
+Then run:
+
+```bash
+cd "${SKILL_DIR}" && node scripts/wallet.js delete <address> --backup-confirmed yes --force-phrase "force delete wallet"
+```

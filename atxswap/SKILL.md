@@ -133,11 +133,14 @@ trusted local workflow instead.
    material, **ALWAYS** remind the user to export and back up the encrypted
    keystore first. Do not delete anything until the user explicitly confirms
    that the keystore backup has been completed.
-9. If the user asks to recover or reveal a saved wallet password, remind them
+9. Wallet deletion requires a second explicit confirmation: after backup is
+   confirmed, require the user to send the exact phrase `force delete wallet` before
+   running any delete command.
+10. If the user asks to recover or reveal a saved wallet password, remind them
    that the password is encrypted in local secure storage and must not be
    disclosed in chat. Do not attempt to print, derive, or expose the password
    even after user confirmation.
-10. If the user asks to recover, reveal, print, or paste the wallet private key,
+11. If the user asks to recover, reveal, print, or paste the wallet private key,
     refuse. Offer `wallet.js export <address> --out <file>` as the only
     supported backup path, because it exports an encrypted keystore instead of
     exposing the raw private key.
@@ -188,7 +191,15 @@ cd "${SKILL_DIR}" && node scripts/wallet.js list
 cd "${SKILL_DIR}" && node scripts/wallet.js export <address> [--out <file>]
 cd "${SKILL_DIR}" && node scripts/wallet.js has-password <address>
 cd "${SKILL_DIR}" && node scripts/wallet.js forget-password <address>
+cd "${SKILL_DIR}" && node scripts/wallet.js delete <address> --backup-confirmed yes --force-phrase "force delete wallet"
 ```
+
+Before `wallet.js delete`:
+
+1. Require the user to export and back up the encrypted keystore first.
+2. Require the user to explicitly confirm that the backup is complete.
+3. Require the user to send the exact phrase `force delete wallet`.
+4. Only then run `wallet.js delete <address> --backup-confirmed yes --force-phrase "force delete wallet"`.
 
 ### `query.js`
 
@@ -278,6 +289,7 @@ cd "${SKILL_DIR}" && node scripts/transfer.js token <tokenAddress> <to> <amount>
 - Missing confirmation for swap, transfer, or liquidity writes
 - User asks to delete a wallet, keystore file, or private-key-bearing wallet
   material before confirming that the encrypted keystore has been backed up
+- User asks to delete a wallet but has not explicitly sent `force delete wallet`
 - User asks to recover or reveal a saved wallet password in chat
 - User asks to recover, reveal, print, or paste a wallet private key in chat
 - `npm install` has not been run successfully in the skill directory

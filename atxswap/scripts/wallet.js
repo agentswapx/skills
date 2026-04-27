@@ -12,6 +12,8 @@ import {
 import { writeFileSync } from "node:fs";
 import { resolve as resolvePath } from "node:path";
 
+const DELETE_FORCE_PHRASE = "force delete wallet";
+
 await runMain(async () => {
   const client = await createClient();
   const args = parseArgs(process.argv.slice(2));
@@ -102,7 +104,30 @@ await runMain(async () => {
       break;
     }
 
+    case "delete": {
+      const address = args._[1];
+      if (!address) {
+        exitError("Usage: wallet.js delete <address> --backup-confirmed yes --force-phrase \"force delete wallet\"");
+      }
+      if (args["backup-confirmed"] !== "yes") {
+        exitError("Refusing to delete wallet: export and back up the keystore first, then rerun with --backup-confirmed yes");
+      }
+      if (args["force-phrase"] !== DELETE_FORCE_PHRASE) {
+        exitError("Refusing to delete wallet: rerun with --force-phrase \"force delete wallet\" after the user explicitly sends that exact phrase");
+      }
+
+      await client.wallet.delete(address);
+      console.log(JSON.stringify({
+        action: "delete",
+        address,
+        deleted: true,
+        backupConfirmed: true,
+        forcePhrase: DELETE_FORCE_PHRASE,
+      }, null, 2));
+      break;
+    }
+
     default:
-      exitError("Usage: wallet.js <create|list|export|forget-password|has-password> [args] [--password <pwd>]");
+      exitError("Usage: wallet.js <create|list|export|forget-password|has-password|delete> [args] [--password <pwd>]");
   }
 });
