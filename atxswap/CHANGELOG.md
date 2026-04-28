@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.24
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14); skill scripts use shared `jsonStringify` for BigInt-safe JSON output.
+
 ## 0.0.23
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14); `SKILL.md` hard-safety keystore channel wording (English).
