@@ -8,6 +8,7 @@ import {
   exitError,
   runMain,
   resolveNewPassword,
+  jsonStringify,
 } from "./_helpers.js";
 import { writeFileSync } from "node:fs";
 import { resolve as resolvePath } from "node:path";
@@ -28,7 +29,7 @@ await runMain(async () => {
       const password = await resolveNewPassword(args);
       const name = args._[1];
       const result = await client.wallet.create(password, name);
-      console.log(JSON.stringify({
+      console.log(jsonStringify({
         action: "create",
         address: result.address,
         keystoreFile: result.keystoreFile,
@@ -38,14 +39,14 @@ await runMain(async () => {
         ...(result.passwordSaveError
           ? { passwordSaveError: result.passwordSaveError }
           : {}),
-      }, null, 2));
+      }, 2));
       break;
     }
 
     case "list": {
       const wallets = client.wallet.list();
       if (wallets.length === 0) {
-        console.log(JSON.stringify({ wallets: [] }, null, 2));
+        console.log(jsonStringify({ wallets: [] }, 2));
         break;
       }
       const results = [];
@@ -61,7 +62,7 @@ await runMain(async () => {
         }
         results.push(entry);
       }
-      console.log(JSON.stringify({ wallets: results }, null, 2));
+      console.log(jsonStringify({ wallets: results }, 2));
       break;
     }
 
@@ -72,16 +73,16 @@ await runMain(async () => {
       }
       const { keystore, keystoreFile } = await exportKeystore(client, address, args);
       const outPath = typeof args.out === "string" ? resolvePath(args.out) : null;
-      const json = JSON.stringify(keystore, null, 2);
+      const json = jsonStringify(keystore, 2);
       if (outPath) {
         writeFileSync(outPath, json);
-        console.log(JSON.stringify({
+        console.log(jsonStringify({
           action: "export",
           address,
           format: "keystore-v3",
           source: keystoreFile,
           output: outPath,
-        }, null, 2));
+        }, 2));
       } else {
         console.log(json);
       }
@@ -92,7 +93,7 @@ await runMain(async () => {
       const address = args._[1];
       if (!address) exitError("Usage: wallet.js forget-password <address>");
       await client.wallet.forgetPassword(address);
-      console.log(JSON.stringify({ action: "forget-password", address, success: true }, null, 2));
+      console.log(jsonStringify({ action: "forget-password", address, success: true }, 2));
       break;
     }
 
@@ -100,7 +101,7 @@ await runMain(async () => {
       const address = args._[1];
       if (!address) exitError("Usage: wallet.js has-password <address>");
       const saved = await client.wallet.hasSavedPassword(address);
-      console.log(JSON.stringify({ address, hasSavedPassword: saved }, null, 2));
+      console.log(jsonStringify({ address, hasSavedPassword: saved }, 2));
       break;
     }
 
@@ -117,13 +118,13 @@ await runMain(async () => {
       }
 
       await client.wallet.delete(address);
-      console.log(JSON.stringify({
+      console.log(jsonStringify({
         action: "delete",
         address,
         deleted: true,
         backupConfirmed: true,
         forcePhrase: DELETE_FORCE_PHRASE,
-      }, null, 2));
+      }, 2));
       break;
     }
 

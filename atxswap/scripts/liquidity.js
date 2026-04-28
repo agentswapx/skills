@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createClient, loadWallet, parseArgs, exitError, runMain, fmt } from "./_helpers.js";
+import { createClient, loadWallet, parseArgs, exitError, runMain, fmt, jsonStringify } from "./_helpers.js";
 import { formatUnits, parseEther } from "atxswap-sdk";
 
 const POOL_TOKEN0_ABI = [
@@ -469,12 +469,11 @@ await runMain(async () => {
       const sdkQuote = await quoteViaSdk(client, baseToken, amount, args);
       if (sdkQuote) {
         console.log(
-          JSON.stringify(
+          jsonStringify(
             sdkQuoteToJson(sdkQuote, {
               action: "quote add liquidity",
               input: { baseToken, amount },
             }),
-            null,
             2,
           ),
         );
@@ -486,12 +485,11 @@ await runMain(async () => {
       const amounts = resolveSingleSidedAmounts(ctx, range.tickLower, range.tickUpper, baseToken, amount);
 
       console.log(
-        JSON.stringify(
+        jsonStringify(
           buildQuoteResult(ctx, range, amounts, {
             action: "quote add liquidity",
             input: { baseToken, amount },
           }),
-          null,
           2,
         ),
       );
@@ -598,9 +596,8 @@ await runMain(async () => {
         liqOptions,
       );
       console.log(
-        JSON.stringify(
+        jsonStringify(
           { action: "add liquidity", txHash: result.txHash, range: meta },
-          null,
           2,
         ),
       );
@@ -617,7 +614,7 @@ await runMain(async () => {
         exitError("Usage: liquidity.js remove <tokenId> <percent> [--from address]");
       }
       const result = await client.liquidity.removeLiquidity(wallet, BigInt(tokenId), parseInt(percent));
-      console.log(JSON.stringify({ action: "remove liquidity", txHash: result.txHash }, null, 2));
+      console.log(jsonStringify({ action: "remove liquidity", txHash: result.txHash }, 2));
       break;
     }
 
@@ -628,7 +625,7 @@ await runMain(async () => {
       const tokenId = args._[1];
       if (!tokenId) exitError("Usage: liquidity.js collect <tokenId> [--from address]");
       const result = await client.liquidity.collectFees(wallet, BigInt(tokenId));
-      console.log(JSON.stringify({ action: "collect fees", txHash: result.txHash }, null, 2));
+      console.log(jsonStringify({ action: "collect fees", txHash: result.txHash }, 2));
       break;
     }
 
@@ -639,7 +636,7 @@ await runMain(async () => {
       const tokenId = args._[1];
       if (!tokenId) exitError("Usage: liquidity.js burn <tokenId> [--from address]");
       const result = await client.liquidity.burnPosition(wallet, BigInt(tokenId));
-      console.log(JSON.stringify({ action: "burn position", txHash: result.txHash }, null, 2));
+      console.log(jsonStringify({ action: "burn position", txHash: result.txHash }, 2));
       break;
     }
 

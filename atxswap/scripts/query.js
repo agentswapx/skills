@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createClient, parseArgs, fmt, runMain } from "./_helpers.js";
+import { createClient, parseArgs, fmt, runMain, jsonStringify } from "./_helpers.js";
 import { parseEther } from "atxswap-sdk";
 
 await runMain(async () => {
@@ -10,11 +10,11 @@ await runMain(async () => {
   switch (command) {
     case "price": {
       const price = await client.query.getPrice();
-      console.log(JSON.stringify({
+      console.log(jsonStringify({
         usdtPerAtx: price.usdtPerAtx,
         atxPerUsdt: price.atxPerUsdt,
         sqrtPriceX96: price.sqrtPriceX96.toString(),
-      }, null, 2));
+      }, 2));
       break;
     }
 
@@ -22,12 +22,12 @@ await runMain(async () => {
       const address = args._[1];
       if (!address) { console.error("Usage: query.js balance <address>"); process.exit(1); }
       const bal = await client.query.getBalance(address);
-      console.log(JSON.stringify({
+      console.log(jsonStringify({
         address,
         bnb: fmt(bal.bnb),
         atx: fmt(bal.atx),
         usdt: fmt(bal.usdt),
-      }, null, 2));
+      }, 2));
       break;
     }
 
@@ -37,12 +37,12 @@ await runMain(async () => {
       if (!direction || !amount) { console.error("Usage: query.js quote <buy|sell> <amount>"); process.exit(1); }
       const amountWei = parseEther(amount);
       const quote = await client.query.getQuote(direction, amountWei);
-      console.log(JSON.stringify({
+      console.log(jsonStringify({
         direction: quote.direction,
         amountIn: fmt(quote.amountIn),
         amountOut: fmt(quote.amountOut),
         priceImpact: (quote.priceImpact * 100).toFixed(4) + "%",
-      }, null, 2));
+      }, 2));
       break;
     }
 
@@ -64,7 +64,7 @@ await runMain(async () => {
           const isAtxToken0 = p.token0.toLowerCase() === client.contracts.atx.toLowerCase();
           const collectable0 = p.collectable0 ?? p.tokensOwed0;
           const collectable1 = p.collectable1 ?? p.tokensOwed1;
-          console.log(JSON.stringify({
+          console.log(jsonStringify({
             tokenId: p.tokenId.toString(),
             fee: p.fee,
             tickLower: p.tickLower,
@@ -76,7 +76,7 @@ await runMain(async () => {
             collectable1: fmt(collectable1),
             collectableAtx: fmt(isAtxToken0 ? collectable0 : collectable1),
             collectableUsdt: fmt(isAtxToken0 ? collectable1 : collectable0),
-          }, null, 2));
+          }, 2));
         }
       }
       break;
@@ -86,13 +86,13 @@ await runMain(async () => {
       const tokenAddr = args._[1];
       if (!tokenAddr) { console.error("Usage: query.js token-info <tokenAddress>"); process.exit(1); }
       const info = await client.query.getTokenInfo(tokenAddr);
-      console.log(JSON.stringify({
+      console.log(jsonStringify({
         address: info.address,
         name: info.name,
         symbol: info.symbol,
         decimals: info.decimals,
         totalSupply: fmt(info.totalSupply, info.decimals),
-      }, null, 2));
+      }, 2));
       break;
     }
 

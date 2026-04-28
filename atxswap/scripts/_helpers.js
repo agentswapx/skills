@@ -49,8 +49,16 @@ export function fmt(wei, decimals = 18) {
   return n.toLocaleString("en-US", { maximumFractionDigits: 6 });
 }
 
+export function jsonStringify(value, space = 2) {
+  return JSON.stringify(
+    value,
+    (_, current) => (typeof current === "bigint" ? current.toString() : current),
+    space,
+  );
+}
+
 export function exitError(message, code = 1) {
-  console.error(JSON.stringify({ error: message }));
+  console.error(jsonStringify({ error: message }));
   process.exit(code);
 }
 
