@@ -2,9 +2,9 @@
 name: atxswap
 description: >-
   Manage ATX on BSC with wallet creation, price and balance queries, PancakeSwap
-  V3 swaps, liquidity operations, and BNB/ERC20 transfers. Use when the user
-  mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks, buying,
-  selling, liquidity, fees, or token transfers.
+  V3 swaps, liquidity operations, LP positions and holdings, and BNB/ERC20 transfers.
+  Use when the user mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks,
+  buying, selling, liquidity, fees, holdings, LP positions, or token transfers.
 version: "0.0.24"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
@@ -30,14 +30,14 @@ agents that need safe, repeatable commands for wallet management, ATX/USDT
 quotes, swaps, V3 liquidity actions, and transfers.
 
 - **SDK**: [`atxswap-sdk`](https://www.npmjs.com/package/atxswap-sdk) on npm ([source](https://github.com/agentswapx/atxswap-sdk))
-- **Docs (team / project)**: [Team introduction](https://docs.atxswap.com/guide/team) · [团队介绍](https://docs.atxswap.com/zh/guide/team)
+- **Docs (team / project)**: [Team introduction (EN)](https://docs.atxswap.com/guide/team) · [Team introduction (ZH)](https://docs.atxswap.com/zh/guide/team)
 - **Keystore dir**: `~/.config/atxswap/keystore` (fixed, not configurable)
 - **Secrets dir**: `~/.config/atxswap/` (master.key + secrets.json)
 
 ## Use This Skill For
 
 - Create the single wallet used by this skill instance (importing an existing private key is not supported)
-- Query ATX price, balances, LP positions, quotes, and arbitrary ERC20 token info
+- Query ATX price, balances, LP positions (see **Required agent reply for holdings** under `query.js`), quotes, and arbitrary ERC20 token info
 - Buy or sell ATX against USDT on PancakeSwap V3
 - Add liquidity (full range or a custom **price range in USDT per ATX** or **tick** bounds), remove liquidity, collect fees, or burn empty LP NFTs
 - Transfer BNB, ATX, USDT, or arbitrary ERC20 tokens
@@ -253,6 +253,27 @@ and `collectable0/1`, `collectableAtx`, `collectableUsdt` computed from a simula
 `collect()` call. Use the `collectable*` fields to decide whether a fee harvest is worth
 executing.
 
+**Required agent reply for holdings** when the user asks about their positions, LP NFTs, or liquidity holdings (per position):
+
+Run `query.js positions <address>` (omit `tokenId` to list all ATX/USDT V3 NFTs). The CLI prints
+**one JSON object per NFT**; include **every** position. For each position, the answer **must**
+address all four topics below (label them in the user’s language when replying):
+
+| Topic | What to include | CLI JSON fields |
+|-------|-----------------|-----------------|
+| **Tokens in the position** | Amounts on **token0** and **token1** in position terms, expressed as **ATX vs USDT** where applicable | `tokensOwed0`, `tokensOwed1` (pool order), **`collectableAtx`**, **`collectableUsdt`**, and name both sides so ATX/USDT are clear. Also state `liquidity` (V3 `L`) — concentrated-liquidity units, not a wallet token balance. |
+| **NFT token ID** | The V3 LP NFT id | `tokenId` |
+| **Price range** | The configured range | `tickLower` / `tickUpper` (always). Optionally add **min/max USDT per ATX** in the same sense as `liquidity.js` / the app (use `query.js price` for spot context), but ticks must still be shown. |
+| **Pending fees** | Uncollected fees that can be claimed | Prefer **`collectableAtx`** / **`collectableUsdt`** (and `collectable0` / `collectable1` if showing pool order); use `tokensOwed0` / `tokensOwed1` for extra context. State they stay **pending** until `liquidity.js collect`. |
+
+Do not answer with only one of these (e.g. ticks alone). If there are no positions, relay
+`No ATX/USDT positions found.` exactly.
+
+Precision: In this JSON, “tokens in the position” are mainly **accrued fees** (`tokensOwed*`,
+`collectable*`) plus `liquidity` as in-range **L**. **Exact deposited ATX/USDT principal** from
+liquidity alone needs price + range math beyond this output — if the user asks only for principal
+breakdown, explain that after still reporting the four items above.
+
 ### `swap.js`
 
 ```bash
@@ -262,17 +283,17 @@ cd "${SKILL_DIR}" && node scripts/swap.js sell <atxAmount> [--from address] [--s
 
 ### `liquidity.js`
 
-**`add` — price / tick 区间**（与前端「USDT/ATX」一致；默认全价格区间=全宽流动性）:
+**`add` — price / tick range** (same USDT/ATX semantics as the web app; default full range = full-width liquidity):
 
-- 默认: 不附加参数即 **全范围**（与原先行为相同）。
-- `--full-range`：显式全范围（勿与下面两类同时使用）。
-- `--min-price` / `--max-price`：按 **1 ATX 多少 USDT** 的区间，脚本会读池子 `token0`、用与前端相同的 `token1/token0`+`tickSpacing` 换算为 `tickLower` / `tickUpper`（需**同时**提供两个价格）。
-- `--range-percent`：以**当前 ATX 价格**为中心，按百分比展开上下界；例如 `20` 表示当前价的 `-20% ~ +20%` 区间。
-- `--tick-lower` / `--tick-upper`：直接指定 V3 `tick`（需**同时**提供；脚本会取二者较小者为下界、较大者为上界，并限制在 V3 允许范围内）。
-- `quote-add <atx|usdt> <amount>`：按实时池价和所选区间，计算另一边需要多少代币，适合作为写入前预估。
-- `add --base-token <atx|usdt> --amount <n>`：只给一边金额，由脚本自动配平另一边，然后直接执行写入。
+- Default: no extra flags means **full range** (same as before).
+- `--full-range`: explicit full range (do not combine with the two groups below).
+- `--min-price` / `--max-price`: band in **USDT per 1 ATX**; the script reads pool `token0` and maps to `tickLower` / `tickUpper` like the app (`token1/token0` + `tickSpacing`). **Both** prices are required.
+- `--range-percent`: band around **current ATX price** as a percentage; e.g. `20` means about `-20%` to `+20%` of the current price.
+- `--tick-lower` / `--tick-upper`: raw V3 ticks (**both** required; script uses the smaller as lower, larger as upper, clamped to valid V3 bounds).
+- `quote-add <atx|usdt> <amount>`: given live price and range, estimate the other leg — use before a write.
+- `add --base-token <atx|usdt> --amount <n>`: single-sided notional; script computes the other leg and executes the add.
 
-可选：`--slippage-bps`（0–10000，默认由 SDK 决定）。
+Optional: `--slippage-bps` (0–10000; default from SDK).
 
 ```bash
 cd "${SKILL_DIR}" && node scripts/liquidity.js quote-add <atx|usdt> <amount> [range opts]
@@ -293,7 +314,7 @@ Prefer `collectableAtx` / `collectableUsdt` over `tokensOwed0/1` when deciding w
 fees are available, because the raw `tokensOwed` fields may stay at zero while
 `collect()` can still succeed.
 
-示例（非全宽；区间请先用 `query.js price` 与用户对齐后再执行写入）:
+Example (not full-range; align the range with the user using `query.js price` before writes):
 
 ```bash
 cd "${SKILL_DIR}" && node scripts/liquidity.js quote-add usdt 0.1 --range-percent 20
@@ -302,13 +323,13 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js add 10 1 --min-price 0.05 --max-p
 cd "${SKILL_DIR}" && node scripts/liquidity.js add 10 1 --tick-lower -20000 --tick-upper 1000
 ```
 
-对话映射建议:
+Mapping user phrasing to commands:
 
-- 用户说“添加 `0.1u` 的流动性，价格区间 `20%`”时，先执行
-  `quote-add usdt 0.1 --range-percent 20`
-- 把返回的 `estimatedAmounts` 展示给用户确认
-- 得到确认后，再执行
-  `add --base-token usdt --amount 0.1 --range-percent 20 --from <address>`
+- If the user asks to add **0.1 USDT** of liquidity with a **±20%** range around spot, first run
+  `quote-add usdt 0.1 --range-percent 20`.
+- Show the returned `estimatedAmounts` (or equivalent summary) and wait for confirmation.
+- After confirmation, run
+  `add --base-token usdt --amount 0.1 --range-percent 20 --from <address>`.
 
 ### `transfer.js`
 
