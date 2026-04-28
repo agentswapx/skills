@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.27
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` **`^0.0.15`** (npm **`0.0.15`**); includes **`principalAtx`/`principalUsdt`** in `query.js positions`, `_v3math.js`, and updated `SKILL.md`/`README*` for LP-vs-wallet semantics.
+
+## 0.0.26
+
+- `query.js positions` outputs **`principalAtx`**, **`principalUsdt`**, `principal0`/`principal1`: in-range token amounts computed from `liquidity` + ticks + spot `sqrtPriceX96` (`getAmountsForLiquidity`), using SDK-provided `principal*` when present (future `atxswap-sdk` versions) to avoid an extra `getPrice()` call. `SKILL.md` updated: distinguish LP principal from **`query.js balance`** (wallet); warns agents not to substitute wallet balances for position tokens; table row fully English. `README.md` / `README.zh.md` fee section documents `principal*` vs `collectable*`.
+
 ## 0.0.25
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14). `SKILL.md` is English-only; documents required agent reply for LP holdings (tokens, NFT id, price range, pending fees); `liquidity.js` narrative translated to English.

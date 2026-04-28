@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { createClient, parseArgs, fmt, runMain, jsonStringify } from "./_helpers.js";
+import { getAmountsForLiquidity } from "./_v3math.js";
 import { parseEther } from "atxswap-sdk";
 
 await runMain(async () => {
@@ -60,16 +61,39 @@ await runMain(async () => {
       if (positions.length === 0) {
         console.log("No ATX/USDT positions found.");
       } else {
+        /** @type {bigint | undefined} */
+        let sqrtCached;
+
         for (const p of positions) {
           const isAtxToken0 = p.token0.toLowerCase() === client.contracts.atx.toLowerCase();
           const collectable0 = p.collectable0 ?? p.tokensOwed0;
           const collectable1 = p.collectable1 ?? p.tokensOwed1;
+
+          let amount0;
+          let amount1;
+          if (p.principal0 !== undefined && p.principal1 !== undefined) {
+            amount0 = p.principal0;
+            amount1 = p.principal1;
+          } else {
+            if (sqrtCached === undefined) {
+              sqrtCached = (await client.query.getPrice()).sqrtPriceX96;
+            }
+            ({ amount0, amount1 } = getAmountsForLiquidity(sqrtCached, p.tickLower, p.tickUpper, p.liquidity));
+          }
+
+          const principalAtx = isAtxToken0 ? amount0 : amount1;
+          const principalUsdt = isAtxToken0 ? amount1 : amount0;
+
           console.log(jsonStringify({
             tokenId: p.tokenId.toString(),
             fee: p.fee,
             tickLower: p.tickLower,
             tickUpper: p.tickUpper,
             liquidity: p.liquidity.toString(),
+            principal0: fmt(amount0),
+            principal1: fmt(amount1),
+            principalAtx: fmt(principalAtx),
+            principalUsdt: fmt(principalUsdt),
             tokensOwed0: fmt(p.tokensOwed0),
             tokensOwed1: fmt(p.tokensOwed1),
             collectable0: fmt(collectable0),

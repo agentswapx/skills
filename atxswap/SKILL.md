@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, LP positions and holdings, and BNB/ERC20 transfers.
   Use when the user mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks,
   buying, selling, liquidity, fees, holdings, LP positions, or token transfers.
-version: "0.0.25"
+version: "0.0.27"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -248,10 +248,12 @@ cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 cd "${SKILL_DIR}" && node scripts/query.js token-info <tokenAddress>
 ```
 
-`query.js positions` now includes both the raw `tokensOwed0/1` fields from `positions()`
-and `collectable0/1`, `collectableAtx`, `collectableUsdt` computed from a simulated
-`collect()` call. Use the `collectable*` fields to decide whether a fee harvest is worth
-executing.
+`query.js positions` includes **principal token amounts** in the position (`principalAtx`,
+`principalUsdt`, `principal0`, `principal1`) computed from V3 `liquidity` (L), the position’s
+`tickLower` / `tickUpper`, and the pool’s current `sqrtPriceX96` (same `getAmountsForLiquidity`
+math as the web app). It also includes the raw `tokensOwed0/1` fields from `positions()` and
+`collectable0/1`, `collectableAtx`, `collectableUsdt` from a simulated `collect()` call. Use
+`collectable*` to decide whether a fee harvest is worth executing.
 
 **Required agent reply for holdings** when the user asks about their positions, LP NFTs, or liquidity holdings (per position):
 
@@ -261,7 +263,7 @@ address all four topics below (label them in the user’s language when replying
 
 | Topic | What to include | CLI JSON fields |
 |-------|-----------------|-----------------|
-| **Tokens in the position** | Amounts on **token0** and **token1** in position terms, expressed as **ATX vs USDT** where applicable | `tokensOwed0`, `tokensOwed1` (pool order), **`collectableAtx`**, **`collectableUsdt`**, and name both sides so ATX/USDT are clear. Also state `liquidity` (V3 `L`) — concentrated-liquidity units, not a wallet token balance. |
+| **Tokens in the position** | **In-range liquidity** as ATX and USDT notionals — always cite **`principalAtx`** and **`principalUsdt`** (and optionally `principal0` / `principal1` in pool token0/token1 order). These are computed at the **current pool price**. Separately cite **fee accruals** via `tokensOwed0`/`tokensOwed1` and **`collectableAtx`**/**`collectableUsdt`**. Mention `liquidity` only as the raw **L** scalar if explaining detail. Do **not** treat **`query.js balance`** as LP “position tokens”: wallet ATX/USDT/BNB balances are unrelated to NFT principal — if shown, label them distinctly (e.g. “Wallet balances, separate from this LP NFT”). |
 | **NFT token ID** | The V3 LP NFT id | `tokenId` |
 | **Price range** | The configured range | `tickLower` / `tickUpper` (always). Optionally add **min/max USDT per ATX** in the same sense as `liquidity.js` / the app (use `query.js price` for spot context), but ticks must still be shown. |
 | **Pending fees** | Uncollected fees that can be claimed | Prefer **`collectableAtx`** / **`collectableUsdt`** (and `collectable0` / `collectable1` if showing pool order); use `tokensOwed0` / `tokensOwed1` for extra context. State they stay **pending** until `liquidity.js collect`. |
@@ -269,10 +271,8 @@ address all four topics below (label them in the user’s language when replying
 Do not answer with only one of these (e.g. ticks alone). If there are no positions, relay
 `No ATX/USDT positions found.` exactly.
 
-Precision: In this JSON, “tokens in the position” are mainly **accrued fees** (`tokensOwed*`,
-`collectable*`) plus `liquidity` as in-range **L**. **Exact deposited ATX/USDT principal** from
-liquidity alone needs price + range math beyond this output — if the user asks only for principal
-breakdown, explain that after still reporting the four items above.
+Minor mismatch vs on-chain bookkeeping can occur because `principal*` uses the same float-based
+tick→√P path as other tooling (~wei-level); values are intended for humans and routing, not audits.
 
 ### `swap.js`
 

@@ -109,10 +109,7 @@ cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address>
 ```
 
-`query.js positions` now returns both the raw `tokensOwed0/1` fields from
-`positions()` and simulated `collectable0/1`, `collectableAtx`, `collectableUsdt`
-values. Use the `collectable*` fields to decide whether a position has harvestable
-fees.
+`query.js positions` returns **principal** token notionals (**`principalAtx`**, **`principalUsdt`**, `principal0`/`principal1`) derived from liquidity L, ticks, and spot price (`getAmountsForLiquidity`); plus raw `tokensOwed0/1` from `positions()`, and simulated `collectable0/1`, `collectableAtx`, `collectableUsdt`. Use **`principal*`** when explaining how much ATX/USDT sits in-range; use **`collectable*`** when deciding fee harvest viability.
 
 ## Security Rules
 
