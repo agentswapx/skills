@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.25
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14). `SKILL.md` is English-only; documents required agent reply for LP holdings (tokens, NFT id, price range, pending fees); `liquidity.js` narrative translated to English.
+
 ## 0.0.24
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` `^0.0.14` (npm 0.0.14); skill scripts use shared `jsonStringify` for BigInt-safe JSON output.
