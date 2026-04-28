@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, LP positions and holdings, and BNB/ERC20 transfers.
   Use when the user mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks,
   buying, selling, liquidity, fees, holdings, LP positions, or token transfers.
-version: "0.0.28"
+version: "0.0.29"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -249,30 +249,33 @@ cd "${SKILL_DIR}" && node scripts/query.js token-info <tokenAddress>
 ```
 
 `query.js positions` includes **principal token amounts** in the position (`principalAtx`,
-`principalUsdt`, `principal0`, `principal1`) computed from V3 `liquidity` (L), the position’s
-`tickLower` / `tickUpper`, and the pool’s current `sqrtPriceX96` (same `getAmountsForLiquidity`
-math as the web app). It also includes the raw `tokensOwed0/1` fields from `positions()` and
-`collectable0/1`, `collectableAtx`, `collectableUsdt` from a simulated `collect()` call. Use
-`collectable*` to decide whether a fee harvest is worth executing. Each object also includes
-**`feePercent`** (e.g. `"0.25%"`) for the pool’s swap-fee tier; raw **`fee`** stays the on-chain
-code (`100` / `500` / `2500` / `10000`).
+`principalUsdt`, `principal0`, `principal1`) computed from V3 `liquidity` (L), ticks (internal),
+and the pool’s current `sqrtPriceX96` (same `getAmountsForLiquidity` math as the web app). It emits
+human **USDT-per-ATX** bounds as **`priceRangeUsdtPerAtx.min` / `.max`**, **`currentPriceUsdtPerAtx`**,
+and **`currentPriceInRange`** (whether the pool tick lies inside that position). It includes
+**`pendingFees.atx`** and **`pendingFees.usdt`** as the simulated collect notionals (`collectable*`),
+plus raw `tokensOwed0`/`1` and `collectable0`/`1` for debugging. Use `collectable*` / `pendingFees`
+to decide whether a fee harvest is worth executing. Each object also includes **`feePercent`**
+(e.g. `"0.25%"`) for the pool’s swap-fee tier; raw **`fee`** stays the on-chain code
+(`100` / `500` / `2500` / `10000`). **Tick indices are not included** in the JSON — quote USDT/ATX
+prices and in-range state instead.
 
 **Required agent reply for holdings** when the user asks about their positions, LP NFTs, or liquidity holdings (per position):
 
 Run `query.js positions <address>` (omit `tokenId` to list all ATX/USDT V3 NFTs). The CLI prints
 **one JSON object per NFT**; include **every** position. For each position, the answer **must**
-address the topics below (label them in the user’s language when replying):
+address the topics below (label them in the user’s language when replying). **Do not** show raw
+V3 tick numbers to the user — use **USDT per 1 ATX** from the JSON below.
 
 | Topic | What to include | CLI JSON fields |
 |-------|-----------------|-----------------|
-| **Tokens in the position** | **In-range liquidity** as ATX and USDT notionals — always cite **`principalAtx`** and **`principalUsdt`** (and optionally `principal0` / `principal1` in pool token0/token1 order). These are computed at the **current pool price**. Separately cite **fee accruals** via `tokensOwed0`/`tokensOwed1` and **`collectableAtx`**/**`collectableUsdt`**. Mention `liquidity` only as the raw **L** scalar if explaining detail. Do **not** treat **`query.js balance`** as LP “position tokens”: wallet ATX/USDT/BNB balances are unrelated to NFT principal — if shown, label them distinctly (e.g. “Wallet balances, separate from this LP NFT”). |
+| **Tokens in the position** | **In-range liquidity** as ATX and USDT notionals — always cite **`principalAtx`** and **`principalUsdt`** (and optionally `principal0` / `principal1` in pool token0/token1 order). These are computed at the **current pool price**. Mention `liquidity` only as the raw **L** scalar if explaining detail. Do **not** treat **`query.js balance`** as LP “position tokens”: wallet ATX/USDT/BNB balances are unrelated to NFT principal — if shown, label them distinctly (e.g. “Wallet balances, separate from this LP NFT”). |
 | **NFT token ID** | The V3 LP NFT id | `tokenId` |
-| **Pool swap fee tier** | The pool’s trading fee as a **percentage** for end users | Prefer **`feePercent`** (e.g. `"0.25%"`). Do **not** show raw **`fee`** (e.g. `2500`) alone without explaining it; if both are shown, lead with **`feePercent`**. |
-| **Price range** | The configured range | `tickLower` / `tickUpper` (always). Optionally add **min/max USDT per ATX** in the same sense as `liquidity.js` / the app (use `query.js price` for spot context), but ticks must still be shown. |
-| **Pending fees** | Uncollected fees that can be claimed | Prefer **`collectableAtx`** / **`collectableUsdt`** (and `collectable0` / `collectable1` if showing pool order); use `tokensOwed0` / `tokensOwed1` for extra context. State they stay **pending** until `liquidity.js collect`. |
+| **Pool swap fee tier** | The pool’s trading fee as a **percentage** for end users | Prefer **`feePercent`** (e.g. `"0.25%"`). If you show the raw tier code, pair it with **`feePercent`** (e.g. `2500` + `0.25%`). |
+| **Price range & spot** | Configured **min/max USDT per 1 ATX** for the position, and current pool price in the same unit | **`priceRangeUsdtPerAtx.min`**, **`priceRangeUsdtPerAtx.max`**, **`currentPriceUsdtPerAtx`**, **`currentPriceInRange`** (confirm “in range” / “out of range” in natural language). |
+| **Pending fees** | Uncollected fees (both tokens) | Always show **`pendingFees.atx`** and **`pendingFees.usdt`** explicitly. Prefer these over quoting only one asset. Optionally reference `collectableAtx`/`collectableUsdt` synonyms. State fees stay **pending** until `liquidity.js collect`. |
 
-Do not answer with only one of these (e.g. ticks alone). If there are no positions, relay
-`No ATX/USDT positions found.` exactly.
+Do not answer with only raw pool indices (ticks). If there are no positions, relay `No ATX/USDT positions found.` exactly.
 
 Minor mismatch vs on-chain bookkeeping can occur because `principal*` uses the same float-based
 tick→√P path as other tooling (~wei-level); values are intended for humans and routing, not audits.
@@ -313,7 +316,7 @@ Before `collect`, preview the target position with:
 cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 ```
 
-Prefer `collectableAtx` / `collectableUsdt` over `tokensOwed0/1` when deciding whether
+Prefer `pendingFees` / `collectableAtx` / `collectableUsdt` over relying on `tokensOwed0/1` alone when deciding whether
 fees are available, because the raw `tokensOwed` fields may stay at zero while
 `collect()` can still succeed.
 

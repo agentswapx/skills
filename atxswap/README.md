@@ -109,7 +109,7 @@ cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address>
 ```
 
-`query.js positions` returns **principal** token notionals (**`principalAtx`**, **`principalUsdt`**, `principal0`/`principal1`) derived from liquidity L, ticks, and spot price (`getAmountsForLiquidity`); plus raw `tokensOwed0/1` from `positions()`, and simulated `collectable0/1`, `collectableAtx`, `collectableUsdt`. Use **`principal*`** when explaining how much ATX/USDT sits in-range; use **`collectable*`** when deciding fee harvest viability.
+`query.js positions` returns **principal** notionals (**`principalAtx`**, **`principalUsdt`**, `principal0`/`principal1`) from liquidity L and spot (`getAmountsForLiquidity`); human **USDT-per-ATX** band **`priceRangeUsdtPerAtx`**, spot **`currentPriceUsdtPerAtx`**, **`currentPriceInRange`**, **`pendingFees`** `{ atx, usdt }`; plus raw `tokensOwed*` / `collectable*` for debugging. Prefer **`principal*`** when explaining tokens in-range; **`pendingFees`** / **`collectable*`** before fee harvest — do **not** surface raw tick indices to users.
 
 ## Security Rules
 

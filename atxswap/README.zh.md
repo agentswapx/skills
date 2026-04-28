@@ -106,7 +106,7 @@ cd "${SKILL_DIR}" && node scripts/query.js positions <address> <tokenId>
 cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address>
 ```
 
-`query.js positions` 会根据流动性 L、价格区间与当前池价计算 **仓内代币约数**（**`principalAtx`** / **`principalUsdt`**、`principal0`/`principal1`，与前端 `getAmountsForLiquidity` 同源）；同时也会返回链上 `positions()` 的 `tokensOwed0/1`，以及模拟 `collect()` 得到的 `collectable0/1`、`collectableAtx`、`collectableUsdt`。说明「头寸里有多少币」时请引用 **`principal*`**；判断是否值得收割时优先看 **`collectable*`**。
+`query.js positions` 会根据流动性 L、价格区间与当前池价计算 **仓内代币约数**（**`principalAtx`** / **`principalUsdt`**、`principal0`/`principal1`，与前端 `getAmountsForLiquidity` 同源）；并给出 **`priceRangeUsdtPerAtx`**（区间内 USDT/ATX）、**`currentPriceUsdtPerAtx`**、**`currentPriceInRange`**；待收 **`pendingFees`**（`atx`、`usdt`），以及链上 `tokensOwed*` 与 `collectable*`。说明「头寸里有多少币」时请引用 **`principal*`**；说明区间与现价用价格字段而非 tick；判断是否值得收割时优先看 **`pendingFees`** / **`collectable*`**。
 
 ## 安全规则
 

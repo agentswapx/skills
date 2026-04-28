@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.29
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` **`^0.0.15`** (npm **`0.0.15`**).
+- `query.js positions`: emits **`priceRangeUsdtPerAtx`**, **`currentPriceUsdtPerAtx`**, **`currentPriceInRange`**, **`pendingFees`** `{ atx, usdt }`; **`tickLower`/`tickUpper`** removed from printed JSON. `SKILL.md` / `README*` updated.
+
 ## 0.0.28
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` **`^0.0.15`** (npm **`0.0.15`**).

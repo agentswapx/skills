@@ -1,7 +1,21 @@
 #!/usr/bin/env node
 import { createClient, parseArgs, fmt, runMain, jsonStringify, feeTierToPercentString } from "./_helpers.js";
-import { getAmountsForLiquidity } from "./_v3math.js";
-import { parseEther } from "atxswap-sdk";
+import { getAmountsForLiquidity, tickToSqrtPriceX96 } from "./_v3math.js";
+import { parseEther, poolAbi } from "atxswap-sdk";
+
+function usdtPerAtxFromSqrt(sqrtPriceX96, isAtxToken0) {
+  const num = Number(sqrtPriceX96);
+  const Q96 = Number(2n ** 96n);
+  const ratio = (num / Q96) ** 2;
+  return isAtxToken0 ? ratio : ratio === 0 ? 0 : 1 / ratio;
+}
+
+/** Human USDT per 1 ATX for display (matches app-style quotes). */
+function fmtUsdtPerAtxPrice(value) {
+  if (!Number.isFinite(value) || value <= 0) return "0";
+  const s = value.toFixed(8).replace(/\.?0+$/, "");
+  return s.length ? s : "0";
+}
 
 await runMain(async () => {
   const client = await createClient();
@@ -61,8 +75,14 @@ await runMain(async () => {
       if (positions.length === 0) {
         console.log("No ATX/USDT positions found.");
       } else {
-        /** @type {bigint | undefined} */
-        let sqrtCached;
+        const slot0Result = await client.publicClient.readContract({
+          address: client.contracts.pool,
+          abi: poolAbi,
+          functionName: "slot0",
+        });
+        const currentTick = Number(slot0Result[1]);
+
+        const priceSnapshot = await client.query.getPrice();
 
         for (const p of positions) {
           const isAtxToken0 = p.token0.toLowerCase() === client.contracts.atx.toLowerCase();
@@ -75,32 +95,58 @@ await runMain(async () => {
             amount0 = p.principal0;
             amount1 = p.principal1;
           } else {
-            if (sqrtCached === undefined) {
-              sqrtCached = (await client.query.getPrice()).sqrtPriceX96;
-            }
-            ({ amount0, amount1 } = getAmountsForLiquidity(sqrtCached, p.tickLower, p.tickUpper, p.liquidity));
+            ({ amount0, amount1 } = getAmountsForLiquidity(
+              priceSnapshot.sqrtPriceX96,
+              p.tickLower,
+              p.tickUpper,
+              p.liquidity,
+            ));
           }
 
           const principalAtx = isAtxToken0 ? amount0 : amount1;
           const principalUsdt = isAtxToken0 ? amount1 : amount0;
 
+          const sqrtTickLower = tickToSqrtPriceX96(p.tickLower);
+          const sqrtTickUpper = tickToSqrtPriceX96(p.tickUpper);
+          const priceAtLower = usdtPerAtxFromSqrt(sqrtTickLower, isAtxToken0);
+          const priceAtUpper = usdtPerAtxFromSqrt(sqrtTickUpper, isAtxToken0);
+          const bandMin = Math.min(priceAtLower, priceAtUpper);
+          const bandMax = Math.max(priceAtLower, priceAtUpper);
+
+          const spotUsdt = priceSnapshot.usdtPerAtx;
+          const tickBoundLo = Math.min(p.tickLower, p.tickUpper);
+          const tickBoundHi = Math.max(p.tickLower, p.tickUpper);
+          const currentPriceInRange =
+            currentTick >= tickBoundLo && currentTick < tickBoundHi;
+
+          const collectableAtxRaw = isAtxToken0 ? collectable0 : collectable1;
+          const collectableUsdtRaw = isAtxToken0 ? collectable1 : collectable0;
+
           console.log(jsonStringify({
             tokenId: p.tokenId.toString(),
             fee: p.fee,
             feePercent: feeTierToPercentString(p.fee),
-            tickLower: p.tickLower,
-            tickUpper: p.tickUpper,
+            priceRangeUsdtPerAtx: {
+              min: fmtUsdtPerAtxPrice(bandMin),
+              max: fmtUsdtPerAtxPrice(bandMax),
+            },
+            currentPriceUsdtPerAtx: fmtUsdtPerAtxPrice(spotUsdt),
+            currentPriceInRange: currentPriceInRange,
             liquidity: p.liquidity.toString(),
             principal0: fmt(amount0),
             principal1: fmt(amount1),
             principalAtx: fmt(principalAtx),
             principalUsdt: fmt(principalUsdt),
+            pendingFees: {
+              atx: fmt(collectableAtxRaw),
+              usdt: fmt(collectableUsdtRaw),
+            },
             tokensOwed0: fmt(p.tokensOwed0),
             tokensOwed1: fmt(p.tokensOwed1),
             collectable0: fmt(collectable0),
             collectable1: fmt(collectable1),
-            collectableAtx: fmt(isAtxToken0 ? collectable0 : collectable1),
-            collectableUsdt: fmt(isAtxToken0 ? collectable1 : collectable0),
+            collectableAtx: fmt(collectableAtxRaw),
+            collectableUsdt: fmt(collectableUsdtRaw),
           }, 2));
         }
       }
