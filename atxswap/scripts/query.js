@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createClient, parseArgs, fmt, runMain, jsonStringify } from "./_helpers.js";
+import { createClient, parseArgs, fmt, runMain, jsonStringify, feeTierToPercentString } from "./_helpers.js";
 import { getAmountsForLiquidity } from "./_v3math.js";
 import { parseEther } from "atxswap-sdk";
 
@@ -87,6 +87,7 @@ await runMain(async () => {
           console.log(jsonStringify({
             tokenId: p.tokenId.toString(),
             fee: p.fee,
+            feePercent: feeTierToPercentString(p.fee),
             tickLower: p.tickLower,
             tickUpper: p.tickUpper,
             liquidity: p.liquidity.toString(),

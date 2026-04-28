@@ -49,6 +49,15 @@ export function fmt(wei, decimals = 18) {
   return n.toLocaleString("en-US", { maximumFractionDigits: 6 });
 }
 
+/** V3 fee tier (`100`|`500`|`2500`|`10000`) → human-readable swap fee, e.g. `0.25%`. Matches Uniswap tier display (`fee`/10000 as a percent label). */
+export function feeTierToPercentString(fee) {
+  const n = Number(fee);
+  if (!Number.isFinite(n) || n <= 0) return "0%";
+  const pct = n / 10000;
+  const s = pct.toFixed(6).replace(/\.?0+$/, "") || "0";
+  return `${s}%`;
+}
+
 export function jsonStringify(value, space = 2) {
   return JSON.stringify(
     value,

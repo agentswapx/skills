@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.28
+
+- ClawHub publish: registry tarball bundles `atxswap-sdk` **`^0.0.15`** (npm **`0.0.15`**).
+- `query.js positions`: add **`feePercent`** (human-readable pool swap fee, e.g. `"0.25%"`; raw **`fee`** remains the on-chain tier code such as `2500`). `SKILL.md` instructs agents to prefer **`feePercent`** in user-facing summaries.
+
 ## 0.0.27
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` **`^0.0.15`** (npm **`0.0.15`**); includes **`principalAtx`/`principalUsdt`** in `query.js positions`, `_v3math.js`, and updated `SKILL.md`/`README*` for LP-vs-wallet semantics.
