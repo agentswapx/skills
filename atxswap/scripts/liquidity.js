@@ -613,8 +613,25 @@ await runMain(async () => {
       if (!tokenId || !percent) {
         exitError("Usage: liquidity.js remove <tokenId> <percent> [--from address]");
       }
-      const result = await client.liquidity.removeLiquidity(wallet, BigInt(tokenId), parseInt(percent));
-      console.log(jsonStringify({ action: "remove liquidity", txHash: result.txHash }, 2));
+      const removePercent = parseInt(percent, 10);
+      const result = await client.liquidity.removeLiquidity(wallet, BigInt(tokenId), removePercent);
+      console.log(
+        jsonStringify(
+          {
+            action: "remove liquidity",
+            txHash: result.txHash,
+            tokenId,
+            percent: removePercent,
+            multicall: removePercent === 100
+              ? ["decreaseLiquidity", "collect", "burn"]
+              : ["decreaseLiquidity", "collect"],
+            note: removePercent === 100
+              ? "100% removal collects withdrawable funds and then burns the NFT in the same transaction. Do not run collect again for this tokenId."
+              : "Removal also collects withdrawable funds in the same transaction.",
+          },
+          2,
+        ),
+      );
       break;
     }
 

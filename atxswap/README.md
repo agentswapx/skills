@@ -111,6 +111,11 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address
 
 `query.js positions` returns **principal** notionals (**`principalAtx`**, **`principalUsdt`**, `principal0`/`principal1`) from liquidity L and spot (`getAmountsForLiquidity`); human **USDT-per-ATX** band **`priceRangeUsdtPerAtx`**, spot **`currentPriceUsdtPerAtx`**, **`currentPriceInRange`**, **`pendingFees`** `{ atx, usdt }`; plus raw `tokensOwed*` / `collectable*` for debugging. Prefer **`principal*`** when explaining tokens in-range; **`pendingFees`** / **`collectable*`** before fee harvest — do **not** surface raw tick indices to users.
 
+`liquidity.js remove <tokenId> <percent>` already performs a single on-chain `multicall`:
+`decreaseLiquidity` -> `collect` -> and when `percent = 100`, `burn`.
+So a full removal already collects withdrawable funds before burning the NFT. After a successful `remove ... 100`,
+running `collect` again for the same `tokenId` is expected to fail because the position NFT no longer exists.
+
 ## Security Rules
 
 1. Never expose private keys or passwords in chat output.

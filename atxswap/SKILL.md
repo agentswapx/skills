@@ -310,6 +310,11 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> [--from address
 cd "${SKILL_DIR}" && node scripts/liquidity.js burn <tokenId> [--from address] [--password <pwd>]
 ```
 
+`liquidity.js remove` already uses a single `multicall`:
+`decreaseLiquidity` -> `collect` -> and when `percent = 100`, `burn`.
+That means a full removal automatically collects withdrawable funds and destroys the LP NFT in the same transaction, so
+running `collect` again for the same `tokenId` is expected to fail because the position no longer exists.
+
 Before `collect`, preview the target position with:
 
 ```bash

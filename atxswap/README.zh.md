@@ -108,6 +108,11 @@ cd "${SKILL_DIR}" && node scripts/liquidity.js collect <tokenId> --from <address
 
 `query.js positions` 会根据流动性 L、价格区间与当前池价计算 **仓内代币约数**（**`principalAtx`** / **`principalUsdt`**、`principal0`/`principal1`，与前端 `getAmountsForLiquidity` 同源）；并给出 **`priceRangeUsdtPerAtx`**（区间内 USDT/ATX）、**`currentPriceUsdtPerAtx`**、**`currentPriceInRange`**；待收 **`pendingFees`**（`atx`、`usdt`），以及链上 `tokensOwed*` 与 `collectable*`。说明「头寸里有多少币」时请引用 **`principal*`**；说明区间与现价用价格字段而非 tick；判断是否值得收割时优先看 **`pendingFees`** / **`collectable*`**。
 
+`liquidity.js remove <tokenId> <percent>` 现在本身就会发起一笔链上 `multicall`：
+`decreaseLiquidity` -> `collect` -> 且当 `percent = 100` 时再 `burn`。
+也就是说，100% 移除会在销毁 NFT 前自动收走当前可提取资金。若 `remove ... 100` 已成功，再对同一个
+`tokenId` 执行 `collect` 报错是预期行为，因为该头寸 NFT 已不存在。
+
 ## 安全规则
 
 1. 不要在聊天输出中暴露私钥或密码。
