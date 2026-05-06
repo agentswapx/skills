@@ -5,7 +5,7 @@ description: >-
   V3 swaps, liquidity operations, LP positions and holdings, and BNB/ERC20 transfers.
   Use when the user mentions ATX, BSC, PancakeSwap V3, wallet creation, price checks,
   buying, selling, liquidity, fees, holdings, LP positions, or token transfers.
-version: "0.0.29"
+version: "0.0.30"
 compatibility: Requires Node.js 18+ and npm. Network access to BSC RPC required.
 inject:
   - bash: echo "${CLAUDE_SKILL_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"

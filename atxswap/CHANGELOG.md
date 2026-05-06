@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.30
+
+- ClawHub republish; registry tarball unchanged (`atxswap-sdk` **`^0.0.15`**). Docs: `llms.txt` updated to reference latest **`0.0.30`**.
+
 ## 0.0.29
 
 - ClawHub publish: registry tarball bundles `atxswap-sdk` **`^0.0.15`** (npm **`0.0.15`**).
