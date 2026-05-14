@@ -124,6 +124,40 @@ running `collect` again for the same `tokenId` is expected to fail because the p
 4. Treat all write actions as mainnet asset operations.
 5. Before deleting a wallet, require the user to export and back up the encrypted keystore first.
 6. Wallet deletion requires a second confirmation: the user must explicitly send `force delete wallet`.
+7. For transfers, always treat `(asset, from, to, amount)` as one unique transfer intent and restate it before execution.
+8. Once a transfer command returns a `txHash`, treat that transfer as already sent; do not automatically send the same transfer again unless the user explicitly asks for another send.
+9. If transfer submission status is ambiguous due to timeout, RPC failure, or interrupted output, do not retry blindly; first inspect chain state or wallet state, then ask the user whether to retry.
+10. For present-tense questions about balances, holdings, LP positions, pending fees, or remaining assets, always refresh from live on-chain queries first; never answer from earlier chat output, memory, or cached values alone.
+
+## Duplicate-Transfer Guard
+
+Use this minimum flow to avoid duplicate transfers:
+
+1. Preview balances or wallet state first
+2. Restate `(asset, from, to, amount)`
+3. Wait for explicit confirmation for that exact tuple
+4. Run the transfer command once
+5. Return the `txHash`
+6. If the same transfer request appears again, clarify whether the user wants a second transfer or is referring to the earlier one
+
+## Live Query Requirement
+
+For these questions, rerun a live query before answering:
+
+- wallet balances
+- ATX / USDT holdings
+- LP NFT positions
+- `principalAtx` / `principalUsdt`
+- pending fees
+- current pool price or quotes
+
+Recommended mapping:
+
+1. Use `query.js balance` for balances
+2. Use `query.js positions` for LP holdings and principals
+3. Use `query.js price` for current pool price
+4. Use `query.js quote` for swap quotes
+5. If the refresh fails, say the latest on-chain data could not be refreshed instead of reusing older values
 
 ## Wallet Deletion
 

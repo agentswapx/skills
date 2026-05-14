@@ -90,6 +90,10 @@ skill directory.
   to a file via `--out <file>`); it never prints the raw private key.
 - `query.js quote` can return a JSON error if the configured Quoter or RPC
   rejects the simulation. Surface the error and do not proceed to a write.
+- For balance, holdings, LP position, or pending-fee questions, always fetch
+  fresh on-chain data at request time. Do **NOT** answer from prior chat
+  output, memory, cached numbers, or earlier command results unless you rerun
+  the relevant query first.
 - For custom-range liquidity, do **not** guess the second token amount from chat.
   First run `liquidity.js quote-add` or use `liquidity.js add --base-token ... --amount ...`
   so the script computes the counter-asset from the live pool price and range.
@@ -163,6 +167,22 @@ trusted local workflow instead.
     refuse. Offer `wallet.js export <address> --out <file>` as the only
     supported backup path, because it exports an encrypted keystore instead of
     exposing the raw private key.
+16. For every transfer, treat the tuple `(asset, from, to, amount)` as a single
+    transfer intent. Repeat that exact tuple back to the user before execution.
+17. After a transfer command returns a `txHash`, consider that transfer intent
+    **already sent**. Do **NOT** send the same transfer again unless the user
+    explicitly asks to send it again.
+18. If a transfer write ends in an ambiguous state (for example RPC timeout,
+    dropped connection, or partial output after signing/submission), do **NOT**
+    retry blindly. First check chain state or wallet state, summarize what is
+    known, and ask the user whether to retry.
+19. If the same transfer tuple appears again in the same conversation after a
+    successful or ambiguous prior attempt, pause and ask whether the user means
+    a new transfer or is referring to the earlier one.
+20. For any user question about **current** balances, holdings, LP positions,
+    pending fees, or wallet assets, rerun the matching read command against the
+    chain first. Never rely on previously displayed numbers as if they were
+    still current.
 
 ## Required Preview Flow
 
@@ -173,6 +193,24 @@ Before every write action:
 3. Ask the user to confirm.
 4. Execute the write command only after confirmation.
 5. Return the transaction hash and the key result fields.
+
+For transfers, the summary in step 2 must explicitly include:
+
+- asset
+- source wallet
+- destination address
+- amount
+
+After step 5, if a `txHash` is available, treat the transfer as executed and do
+not issue the same write again unless the user clearly requests a second send.
+
+For read-only asset questions:
+
+1. Run the relevant live query first (`query.js balance`, `query.js positions`,
+   `query.js price`, or `query.js quote` as appropriate).
+2. Answer from that fresh output only.
+3. If the RPC or query fails, say the data could not be refreshed instead of
+   reusing older numbers.
 
 ## High-Value Workflows
 
@@ -257,8 +295,13 @@ and **`currentPriceInRange`** (whether the pool tick lies inside that position).
 plus raw `tokensOwed0`/`1` and `collectable0`/`1` for debugging. Use `collectable*` / `pendingFees`
 to decide whether a fee harvest is worth executing. Each object also includes **`feePercent`**
 (e.g. `"0.25%"`) for the pool’s swap-fee tier; raw **`fee`** stays the on-chain code
-(`100` / `500` / `2500` / `10000`). **Tick indices are not included** in the JSON — quote USDT/ATX
-prices and in-range state instead.
+(`100` / `500` / `2500` / `10000`). **Tick indices are not included** in the JSON — quote
+USDT/ATX prices and in-range state instead.
+
+When the user asks "how much do I have now", "what is my current balance", "what
+positions are left", "how much ATX is still in the LP", or similar present-tense
+questions, rerun `query.js balance` and/or `query.js positions` immediately.
+Do not answer from previously captured JSON.
 
 **Required agent reply for holdings** when the user asks about their positions, LP NFTs, or liquidity holdings (per position):
 
@@ -350,6 +393,18 @@ cd "${SKILL_DIR}" && node scripts/transfer.js atx <to> <amount> [--from address]
 cd "${SKILL_DIR}" && node scripts/transfer.js usdt <to> <amount> [--from address] [--password <pwd>]
 cd "${SKILL_DIR}" && node scripts/transfer.js token <tokenAddress> <to> <amount> [--from address] [--password <pwd>]
 ```
+
+Transfer anti-duplication checklist:
+
+1. Preview balances first.
+2. Restate the exact transfer tuple `(asset, from, to, amount)` to the user.
+3. Wait for explicit confirmation for that exact tuple.
+4. Run `transfer.js` once.
+5. Return the `txHash`.
+6. If the user repeats the same request, do not run the transfer again until
+   you clarify whether they want a second transfer.
+7. If the command may have submitted but the final result is unclear, do not
+   rerun it automatically; inspect chain state or ask the user how to proceed.
 
 ## When To Refuse Or Pause
 
