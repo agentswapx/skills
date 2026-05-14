@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.31
+
+- ClawHub republish; registry tarball unchanged (`atxswap-sdk` **`^0.0.15`**). `SKILL.md` / `README*` — require fresh on-chain reads for balances/positions; transfer intent recap, no duplicate sends after `txHash`, no blind retries on ambiguous RPC/signing.; `frontend`/`docs-site` `llms.txt` reference **`0.0.31`**.
+
 ## 0.0.30
 
 - ClawHub republish; registry tarball unchanged (`atxswap-sdk` **`^0.0.15`**). Docs: `llms.txt` updated to reference latest **`0.0.30`**.
