@@ -53,6 +53,11 @@ clawhub publish ./skills/atxswap \
   --tags latest,atxswap,atx,bsc,trading
 ```
 
+When you run publish from inside this folder, prefer an **absolute path** to the
+skill directory or set `--workdir` to this directory. Otherwise the CLI may
+resolve a global ClawBot/OpenClaw workspace as `workdir`, and `clawhub publish .
+` mistakes that folder for the skill bundle and fails with `SKILL.md required`.
+
 After upload there is a brief security-scan window during which `clawhub
 inspect atxswap` returns "Skill is hidden while security scan is pending".
 
